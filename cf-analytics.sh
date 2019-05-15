@@ -13,6 +13,10 @@ CF_LOG='cm-analytics.log'
 CF_LOGARGO='cm-analytics-argo.log'
 CF_LOGARGOGEO='cm-analytics-argo-geo.log'
 
+if [[ -f $(which yum) && ! -f /usr/bin/datamash ]]; then
+  yum -y -q install datamash
+fi
+
 get_analytics() {
   since=$1
 
@@ -56,6 +60,67 @@ echo "  request-with-argo: ${argoreq_with}"
 echo "  argo-smarted-routed: ${argorouted}%"
 echo "  argo-improvement: ${argogain}%"
 cat "$CF_LOGARGO" | jq -r '.result.data | "  without-argo: \(.averages[0]) (milliseconds)\n  with-argo \(.averages[1]) (milliseconds)"'
+echo "------------------------------------------------------------------"
+echo "  Argo Cloudflare Datacenter Response Times"
+echo "------------------------------------------------------------------"
+cat "$CF_LOGARGOGEO" | jq -r '.result.features[] | .properties | "  \(.code) \(.argo_req_count) \(.pct_avg_change) \(.no_argo_avg) \(.argo_avg)"'  | column -t | sed -e 's|\-||g' | awk '{print "  "$0}' > /tmp/argo-geo.log
+
+# each datacenter requests x response time without argo
+argo_totaltime_withoutargo=$(cat /tmp/argo-geo.log | awk '{print $2*$4}' | datamash --no-strict --filler 0 sum 1)
+# each datacenter requests x response time with argo
+argo_totaltime_withargo=$(cat /tmp/argo-geo.log | awk '{print $2*$5}' | datamash --no-strict --filler 0 sum 1)
+argo_totalreqs=$(cat /tmp/argo-geo.log | awk '{print $2}' | datamash --no-strict --filler 0 sum 1)
+argo_totalavg_time_withoutargo=$(echo "scale=4; $argo_totaltime_withoutargo/$argo_totalreqs" | bc)
+argo_totalavg_time_withargo=$(echo "scale=4; $argo_totaltime_withargo/$argo_totalreqs" | bc)
+
+argogain_avg=$(cat /tmp/argo-geo.log | awk '{print $3}' | datamash --no-strict --filler 0 mean 1)
+argogain_avg=$(printf "%.4f\n" $argogain_avg)
+argogain_min=$(cat /tmp/argo-geo.log | awk '{print $3}' | datamash --no-strict --filler 0 min 1)
+argogain_min=$(printf "%.4f\n" $argogain_min)
+argogain_max=$(cat /tmp/argo-geo.log | awk '{print $3}' | datamash --no-strict --filler 0 max 1)
+argogain_max=$(printf "%.4f\n" $argogain_max)
+argogain_stddev=$(cat /tmp/argo-geo.log | awk '{print $3}' | datamash --no-strict --filler 0 sstdev 1)
+argogain_stddev=$(printf "%.4f\n" $argogain_stddev)
+
+argobefore_avg=$(cat /tmp/argo-geo.log | awk '{print $4}' | datamash --no-strict --filler 0 mean 1)
+argobefore_avg=$(printf "%.4f\n" $argobefore_avg)
+argobefore_min=$(cat /tmp/argo-geo.log | awk '{print $4}' | datamash --no-strict --filler 0 min 1)
+argobefore_min=$(printf "%.4f\n" $argobefore_min)
+argobefore_max=$(cat /tmp/argo-geo.log | awk '{print $4}' | datamash --no-strict --filler 0 max 1)
+argobefore_max=$(printf "%.4f\n" $argobefore_max)
+argobefore_stddev=$(cat /tmp/argo-geo.log | awk '{print $4}' | datamash --no-strict --filler 0 sstdev 1)
+argobefore_stddev=$(printf "%.4f\n" $argobefore_stddev)
+
+argoafter_avg=$(cat /tmp/argo-geo.log | awk '{print $5}' | datamash --no-strict --filler 0 mean 1)
+argoafter_avg=$(printf "%.4f\n" $argoafter_avg)
+argoafter_min=$(cat /tmp/argo-geo.log | awk '{print $5}' | datamash --no-strict --filler 0 min 1)
+argoafter_min=$(printf "%.4f\n" $argoafter_min)
+argoafter_max=$(cat /tmp/argo-geo.log | awk '{print $5}' | datamash --no-strict --filler 0 max 1)
+argoafter_max=$(printf "%.4f\n" $argoafter_max)
+argoafter_stddev=$(cat /tmp/argo-geo.log | awk '{print $5}' | datamash --no-strict --filler 0 sstdev 1)
+argoafter_stddev=$(printf "%.4f\n" $argoafter_stddev)
+
+cat /tmp/argo-geo.log
+echo "  total-argo-reqs: $argo_totalreqs"
+echo "  datacenter-calc-avg-resp-without: $argo_totalavg_time_withoutargo"
+echo "  datacenter-calc-avg-resp-with: $argo_totalavg_time_withargo"
+echo "  argo-improvement:"
+echo "      min: $argogain_min"
+echo "      avg: $argogain_avg"
+echo "      max: $argogain_max"
+echo "      stddev: $argogain_stddev"
+echo "  argo-resp-time-without-argo:"
+echo "      min: $argobefore_min"
+echo "      avg: $argobefore_avg"
+echo "      max: $argobefore_max"
+echo "      stddev: $argobefore_stddev"
+echo "  argo-resp-time-with-argo:"
+echo "      min: $argoafter_min"
+echo "      avg: $argoafter_avg"
+echo "      max: $argoafter_max"
+echo "      stddev: $argoafter_stddev"
+
+rm -f /tmp/argo-geo.log
 
 echo
 fi
