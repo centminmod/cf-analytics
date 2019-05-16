@@ -63,7 +63,7 @@ cat "$CF_LOGARGO" | jq -r '.result.data | "  without-argo: \(.averages[0]) (mill
 echo "------------------------------------------------------------------"
 echo "  Argo Cloudflare Datacenter Response Times"
 echo "------------------------------------------------------------------"
-cat "$CF_LOGARGOGEO" | jq -r '.result.features[] | .properties | "  \(.code) \(.argo_req_count) \(.pct_avg_change) \(.no_argo_avg) \(.argo_avg)"'  | column -t | sed -e 's|\-||g' | awk '{print "  "$0}' > /tmp/argo-geo.log
+cat "$CF_LOGARGOGEO" | jq -r '.result.features[] | .properties | "  \(.code) \(.argo_req_count) \(.pct_avg_change) \(.no_argo_avg) \(.argo_avg)"'  | column -t | sed -e 's|\-||g' | awk '{print "  "$0}' | sort -k2 -n -r > /tmp/argo-geo.log
 
 # each datacenter requests x response time without argo
 argo_totaltime_withoutargo=$(cat /tmp/argo-geo.log | awk '{print $2*$4}' | datamash --no-strict --filler 0 sum 1)
