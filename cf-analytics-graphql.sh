@@ -9,6 +9,7 @@
 ################################################
 # whether to use CF Global Account API Token or
 # new CF specific API Tokens (in beta right now)
+DEBUG='y'
 CF_GLOBAL_TOKEN='n'
 CF_ARGO='n'
 CF_LOG='cm-analytics-graphql.log'
@@ -23,10 +24,14 @@ fi
 get_analytics() {
   since=$1
   back_seconds=$((60 * 60 * $since))
-  end_epoch=$(date +'%s')
+  end_epoch=$(TZ=UTC date +'%s')
   let start_epoch=$end_epoch-$back_seconds
-  start_date=$(date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
-  end_date=$(date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  # 1s
+  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  # 1d
+  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
+  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
 
   ZoneID="$zid"
   global_key="$cfkey"
@@ -37,7 +42,7 @@ get_analytics() {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
           httpRequests1mGroups(
-            limit: 100
+            limit: 10000
             filter: $filter
           ) {
             sum {
@@ -94,13 +99,26 @@ get_analytics() {
       \"zoneTag\": \"$ZoneID\",
       \"filter\": {
         \"datetime_geq\": \"$start_date\",
-        \"datetime_lt\": \"$end_date\"
+        \"datetime_leq\": \"$end_date\"
       }
     }
   }"
 
+if [[ "$DEBUG" = [yY] ]]; then
+  echo
+  echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
+  echo
+fi
+
 if [[ "$CF_GLOBAL_TOKEN" = [yY] ]]; then
   curl -4sX POST -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOG"
+  cat "$CF_LOG" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOG" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
   if [[ "$CF_ARGO" = [yY] ]]; then
     curl -4sX GET "https://api.cloudflare.com/client/v4/zones/${zid}/analytics/latency?bins=10" \
      -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGARGO"
@@ -109,6 +127,13 @@ if [[ "$CF_GLOBAL_TOKEN" = [yY] ]]; then
   fi
 else
   curl -4sX POST -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOG"
+  cat "$CF_LOG" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOG" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
   if [[ "$CF_ARGO" = [yY] ]]; then
     curl -4sX GET "https://api.cloudflare.com/client/v4/zones/${zid}/analytics/latency?bins=10" \
      -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGARGO"
@@ -210,7 +235,7 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "Requests:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.requests'
+cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum | "requests: \(.requests)\nencrypted-requests: \(.encryptedRequests)"' | column -t
 
 echo
 echo "------------------------------------------------------------------"
@@ -240,7 +265,7 @@ echo
 echo "------------------------------------------------------------------"
 echo "Requests Content Types:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.contentTypeMap[] | "\(.edgeResponseContentTypeName): \(.requests) bytes: \(.requests)"' | column -t
+cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.contentTypeMap[] | "\(.edgeResponseContentTypeName): \(.requests) bytes: \(.requests)"' | sort -r -nk 2 | column -t
 
 echo
 echo "------------------------------------------------------------------"
