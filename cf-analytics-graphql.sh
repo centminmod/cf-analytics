@@ -59,6 +59,10 @@ get_analytics() {
                 requests
                 edgeResponseContentTypeName
               }
+              clientHTTPVersionMap {
+                clientHTTPProtocol
+                requests
+              }
               clientSSLMap {
                 requests
                 clientSSLProtocol
@@ -237,7 +241,7 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "Requests:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum | "cached-requests: \(.cachedRequests)\nrequests: \(.requests)\nencrypted-requests: \(.encryptedRequests)"' | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum | "cached-requests: \(.cachedRequests)\ntotal-requests: \(.requests)\nencrypted-requests: \(.encryptedRequests)"' | column -t
 
 # echo
 # echo "------------------------------------------------------------------"
@@ -256,6 +260,12 @@ echo "------------------------------------------------------------------"
 echo "Requests HTTP Status Codes:"
 echo "------------------------------------------------------------------"
 cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.responseStatusMap[] | "\(.edgeResponseStatus): \(.requests)"' | column -t
+
+echo
+echo "------------------------------------------------------------------"
+echo "Requests HTTP Versions:"
+echo "------------------------------------------------------------------"
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.clientHTTPVersionMap[] | "\(.clientHTTPProtocol): \(.requests)"' | column -t
 
 echo
 echo "------------------------------------------------------------------"
