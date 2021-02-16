@@ -16,6 +16,7 @@ CF_LOG='cm-analytics-graphql.log'
 CF_LOGARGO='cm-analytics-graphql-argo.log'
 CF_LOGARGOGEO='cm-analytics-graphql-argo-geo.log'
 ENDPOINT='https://api.cloudflare.com/client/v4/graphql'
+DATANODE='httpRequests1hGroups'
 
 if [[ -f $(which yum) && ! -f /usr/bin/datamash ]]; then
   yum -y -q install datamash
@@ -41,7 +42,7 @@ get_analytics() {
     "query {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
-          httpRequests1mGroups(
+          httpRequests1hGroups(
             limit: 10000
             filter: $filter
           ) {
@@ -97,6 +98,7 @@ get_analytics() {
   
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
+      \"dataNode\": \"$DATANODE\",
       \"filter\": {
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
@@ -235,50 +237,50 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "Requests:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum | "requests: \(.requests)\nencrypted-requests: \(.encryptedRequests)"' | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum | "cached-requests: \(.cachedRequests)\nrequests: \(.requests)\nencrypted-requests: \(.encryptedRequests)"' | column -t
 
-echo
-echo "------------------------------------------------------------------"
-echo "Cached Requests:"
-echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.cachedRequests'
+# echo
+# echo "------------------------------------------------------------------"
+# echo "Cached Requests:"
+# echo "------------------------------------------------------------------"
+# cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.cachedRequests'
 
 echo
 echo "------------------------------------------------------------------"
 echo "Pageviews:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.pageViews'
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.pageViews'
 
 echo
 echo "------------------------------------------------------------------"
 echo "Requests HTTP Status Codes:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.responseStatusMap[] | "\(.edgeResponseStatus): \(.requests)"' | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.responseStatusMap[] | "\(.edgeResponseStatus): \(.requests)"' | column -t
 
 echo
 echo "------------------------------------------------------------------"
 echo "Requests SSL Protocols:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.clientSSLMap[] | "\(.clientSSLProtocol): \(.requests)"' | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.clientSSLMap[] | "\(.clientSSLProtocol): \(.requests)"' | column -t
 
 echo
 echo "------------------------------------------------------------------"
 echo "Requests Content Types:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.contentTypeMap[] | "\(.edgeResponseContentTypeName): \(.requests) bytes: \(.requests)"' | sort -r -nk 2 | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.contentTypeMap[] | "\(.edgeResponseContentTypeName): \(.requests) bytes: \(.requests)"' | sort -r -nk 2 | column -t
 
 echo
 echo "------------------------------------------------------------------"
 echo "Requests IP Class:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.ipClassMap[] | "\(.ipType): \(.requests)"' | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.ipClassMap[] | "\(.ipType): \(.requests)"' | column -t
 
 echo
 echo "------------------------------------------------------------------"
 echo "Requests Country Top 20:"
 echo "------------------------------------------------------------------"
 # cat "$CF_LOG" | jq -r '.result.totals.requests.country' | tr -d '{}' | sed -r '/^\s*$/d'
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 2 | head -n20 | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 2 | head -n20 | column -t
 echo
 
 # echo "------------------------------------------------------------------"
@@ -290,26 +292,26 @@ echo
 # echo "------------------------------------------------------------------"
 # echo "Bandwidth SSL Protocols:"
 # echo "------------------------------------------------------------------"
-# cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.contentTypeMap[]'
+# cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.contentTypeMap[]'
 
 # echo
 # echo "------------------------------------------------------------------"
 # echo "Bandwidth Content Types:"
 # echo "------------------------------------------------------------------"
-# cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.contentTypeMap[]'
+# cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.contentTypeMap[]'
 
 echo
 echo "------------------------------------------------------------------"
 echo "Bandwidth Country Top 20:"
 echo "------------------------------------------------------------------"
 # cat "$CF_LOG" | jq -r '.result.totals.bandwidth.country' | tr -d '{}' | sed -r '/^\s*$/d'
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 6 | head -n20 | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 6 | head -n20 | column -t
 
 echo
 echo "------------------------------------------------------------------"
 echo "Threats:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq -r '.data.viewer.zones | .[] | .httpRequests1mGroups[].sum.threatPathingMap[] | "\(.threatPathingName): \(.requests)"'
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.threatPathingMap[] | "\(.threatPathingName): \(.requests)"'
 
 echo
 }
