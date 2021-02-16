@@ -296,10 +296,10 @@ fi
 
 echo
 echo "------------------------------------------------------------------"
-echo "Requests Country Top 20:"
+echo "Requests Country Top 50:"
 echo "------------------------------------------------------------------"
 # cat "$CF_LOG" | jq -r '.result.totals.requests.country' | tr -d '{}' | sed -r '/^\s*$/d'
-cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 2 | head -n20 | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 2 | head -n50 | column -t
 echo
 
 # echo "------------------------------------------------------------------"
@@ -321,10 +321,10 @@ echo
 
 echo
 echo "------------------------------------------------------------------"
-echo "Bandwidth Country Top 20:"
+echo "Bandwidth Country Top 50:"
 echo "------------------------------------------------------------------"
 # cat "$CF_LOG" | jq -r '.result.totals.bandwidth.country' | tr -d '{}' | sed -r '/^\s*$/d'
-cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 6 | head -n20 | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 6 | head -n50 | column -t
 
 echo
 echo "------------------------------------------------------------------"
@@ -609,10 +609,10 @@ fi
 
 echo
 echo "------------------------------------------------------------------"
-echo "Requests Country Top 20:"
+echo "Requests Country Top 50:"
 echo "------------------------------------------------------------------"
 # cat "$CF_LOG" | jq -r '.result.totals.requests.country' | tr -d '{}' | sed -r '/^\s*$/d'
-cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 2 | head -n20 | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 2 | head -n50 | column -t
 echo
 
 # echo "------------------------------------------------------------------"
@@ -634,10 +634,10 @@ echo
 
 echo
 echo "------------------------------------------------------------------"
-echo "Bandwidth Country Top 20:"
+echo "Bandwidth Country Top 50:"
 echo "------------------------------------------------------------------"
 # cat "$CF_LOG" | jq -r '.result.totals.bandwidth.country' | tr -d '{}' | sed -r '/^\s*$/d'
-cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 6 | head -n20 | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.requests)"' | sort -r -nk 6 | head -n50 | column -t
 
 echo
 echo "------------------------------------------------------------------"
