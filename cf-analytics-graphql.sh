@@ -150,6 +150,12 @@ else
 fi
 
 if [[ "$CF_ARGO" = [yY] ]]; then
+  # check if there's argo data in the log
+  check_argo_result=$(cat "$CF_LOGARGO" | jq -r '.result')
+  check_argo_success=$(cat "$CF_LOGARGO" | jq -r '.success')
+fi
+
+if [[ "$CF_ARGO" = [yY] && "$check_argo_result" != 'null' && "$check_argo_success" = 'true' ]]; then
 echo "------------------------------------------------------------------"
 echo "Cloudflare Argo Analytics"
 echo "------------------------------------------------------------------"
@@ -242,7 +248,7 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "Requests:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum | "cached-requests: \(.cachedRequests)\ntotal-requests: \(.requests)\nencrypted-requests: \(.encryptedRequests)"' | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum | "non-cached-requests: \(.requests-.cachedRequests)\ncached-requests: \(.cachedRequests)\ntotal-requests: \(.requests)\nencrypted-requests: \(.encryptedRequests)"' | column -t
 
 # echo
 # echo "------------------------------------------------------------------"
@@ -463,6 +469,12 @@ else
 fi
 
 if [[ "$CF_ARGO" = [yY] ]]; then
+  # check if there's argo data in the log
+  check_argo_result=$(cat "$CF_LOGARGO" | jq -r '.result')
+  check_argo_success=$(cat "$CF_LOGARGO" | jq -r '.success')
+fi
+
+if [[ "$CF_ARGO" = [yY] && "$check_argo_result" != 'null' && "$check_argo_success" = 'true' ]]; then
 echo "------------------------------------------------------------------"
 echo "Cloudflare Argo Analytics"
 echo "------------------------------------------------------------------"
@@ -555,7 +567,7 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "Requests:"
 echo "------------------------------------------------------------------"
-cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum | "cached-requests: \(.cachedRequests)\ntotal-requests: \(.requests)\nencrypted-requests: \(.encryptedRequests)"' | column -t
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum | "non-cached-requests: \(.requests-.cachedRequests)\ncached-requests: \(.cachedRequests)\ntotal-requests: \(.requests)\nencrypted-requests: \(.encryptedRequests)"' | column -t
 
 # echo
 # echo "------------------------------------------------------------------"
