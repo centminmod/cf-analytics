@@ -441,9 +441,9 @@ if [[ "$CF_GLOBAL_TOKEN" = [yY] ]]; then
   fi
   if [[ "$CF_ARGO" = [yY] ]]; then
     curl -4sX GET "https://api.cloudflare.com/client/v4/zones/${zid}/analytics/latency?bins=10" \
-     -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGARGO"
+     -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" > "$CF_LOGARGO"
     curl -4sX GET "https://api.cloudflare.com/client/v4/zones/${zid}/analytics/latency/colos" \
-     -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGARGOGEO"
+     -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" > "$CF_LOGARGOGEO"
   fi
 else
   curl -4sX POST -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOG"
@@ -456,9 +456,9 @@ else
   fi
   if [[ "$CF_ARGO" = [yY] ]]; then
     curl -4sX GET "https://api.cloudflare.com/client/v4/zones/${zid}/analytics/latency?bins=10" \
-     -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGARGO"
+     -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" > "$CF_LOGARGO"
     curl -4sX GET "https://api.cloudflare.com/client/v4/zones/${zid}/analytics/latency/colos" \
-     -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGARGOGEO"
+     -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" > "$CF_LOGARGOGEO"
   fi
 fi
 
