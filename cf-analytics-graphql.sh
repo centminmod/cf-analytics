@@ -103,7 +103,6 @@ get_analytics() {
   
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
-      \"dataNode\": \"$DATANODE\",
       \"filter\": {
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
@@ -178,7 +177,7 @@ cat "$CF_LOGARGO" | jq -r '.result.data | "  without-argo: \(.averages[0]) (mill
 echo "------------------------------------------------------------------"
 echo "Argo Cloudflare Datacenter Response Times"
 echo "------------------------------------------------------------------"
-cat "$CF_LOGARGOGEO" | jq -r '.result.features[] | .properties | "  \(.code) \(.argo_req_count) \(.pct_avg_change) \(.no_argo_avg) \(.argo_avg)"'  | column -t | sed -e 's|\-||g' | awk '{print "  "$0}' | sort -k2 -n -r > /tmp/argo-geo.log
+cat "$CF_LOGARGOGEO" | jq -r '.result.features[] | .properties | "  \(.code) \(.argo_req_count) \(.pct_avg_change * 100) \(.no_argo_avg) \(.argo_avg)"'  | column -t | sed -e 's|\-||g' | awk '{print "  "$0}' | sort -k2 -n -r > /tmp/argo-geo.log
 
 # each datacenter requests x response time without argo
 argo_totaltime_withoutargo=$(cat /tmp/argo-geo.log | awk '{print $2*$4}' | datamash --no-strict --filler 0 sum 1)
@@ -331,6 +330,13 @@ echo "Bandwidth Country Top 50:"
 echo "------------------------------------------------------------------"
 # cat "$CF_LOG" | jq -r '.result.totals.bandwidth.country' | tr -d '{}' | sed -r '/^\s*$/d'
 cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.bytes)"' | sort -r -nk 6 | head -n50 | column -t
+
+echo
+echo "------------------------------------------------------------------"
+echo "Threats Country Top 50:"
+echo "------------------------------------------------------------------"
+# cat "$CF_LOG" | jq -r '.result.totals.bandwidth.country' | tr -d '{}' | sed -r '/^\s*$/d'
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.bytes)"' | sort -r -nk 4 | head -n50 | column -t
 
 echo
 echo "------------------------------------------------------------------"
@@ -422,7 +428,6 @@ get_analytics_days() {
   
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
-      \"dataNode\": \"$DATANODE\",
       \"filter\": {
         \"date_gt\": \"$start_date\",
         \"date_lt\": \"$end_date\"
@@ -497,7 +502,7 @@ cat "$CF_LOGARGO" | jq -r '.result.data | "  without-argo: \(.averages[0]) (mill
 echo "------------------------------------------------------------------"
 echo "Argo Cloudflare Datacenter Response Times"
 echo "------------------------------------------------------------------"
-cat "$CF_LOGARGOGEO" | jq -r '.result.features[] | .properties | "  \(.code) \(.argo_req_count) \(.pct_avg_change) \(.no_argo_avg) \(.argo_avg)"'  | column -t | sed -e 's|\-||g' | awk '{print "  "$0}' | sort -k2 -n -r > /tmp/argo-geo.log
+cat "$CF_LOGARGOGEO" | jq -r '.result.features[] | .properties | "  \(.code) \(.argo_req_count) \(.pct_avg_change * 100) \(.no_argo_avg) \(.argo_avg)"'  | column -t | sed -e 's|\-||g' | awk '{print "  "$0}' | sort -k2 -n -r > /tmp/argo-geo.log
 
 # each datacenter requests x response time without argo
 argo_totaltime_withoutargo=$(cat /tmp/argo-geo.log | awk '{print $2*$4}' | datamash --no-strict --filler 0 sum 1)
@@ -650,6 +655,13 @@ echo "Bandwidth Country Top 50:"
 echo "------------------------------------------------------------------"
 # cat "$CF_LOG" | jq -r '.result.totals.bandwidth.country' | tr -d '{}' | sed -r '/^\s*$/d'
 cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.bytes)"' | sort -r -nk 6 | head -n50 | column -t
+
+echo
+echo "------------------------------------------------------------------"
+echo "Threats Country Top 50:"
+echo "------------------------------------------------------------------"
+# cat "$CF_LOG" | jq -r '.result.totals.bandwidth.country' | tr -d '{}' | sed -r '/^\s*$/d'
+cat "$CF_LOG" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][].sum.countryMap[] | "\(.clientCountryName): \(.requests) threats: \(.threats) bytes: \(.bytes)"' | sort -r -nk 4 | head -n50 | column -t
 
 echo
 echo "------------------------------------------------------------------"
