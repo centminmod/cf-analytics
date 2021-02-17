@@ -41,8 +41,7 @@ ip_analytics_hrs() {
 
   if [ "$input_actionfilter" ]; then
     client_var="\"clientIP\": \"$input_ip\",
-        \"action\": \"$input_actionfilter\",
-    "
+        \"action\": \"$input_actionfilter\","
   else
     client_var="\"clientIP\": \"$input_ip\","
   fi
@@ -157,8 +156,7 @@ ip_analytics_days() {
 
   if [ "$input_actionfilter" ]; then
     client_var="\"clientIP\": \"$input_ip\",
-        \"action\": \"$input_actionfilter\",
-    "
+        \"action\": \"$input_actionfilter\","
   else
     client_var="\"clientIP\": \"$input_ip\","
   fi
@@ -271,8 +269,7 @@ ip_analytics() {
 
   if [ "$input_actionfilter" ]; then
     client_var="\"clientIP\": \"$input_ip\",
-        \"action\": \"$input_actionfilter\",
-    "
+        \"action\": \"$input_actionfilter\","
   else
     client_var="\"clientIP\": \"$input_ip\","
   fi
@@ -385,8 +382,7 @@ fw_analytics_days() {
 
   if [ "$input_actionfilter" ]; then
     rayname_var="\"rayName\": \"$input_rayid\",
-        \"action\": \"$input_actionfilter\",
-    "
+        \"action\": \"$input_actionfilter\","
   else
     rayname_var="\"rayName\": \"$input_rayid\","
   fi
@@ -499,8 +495,7 @@ fw_analytics() {
 
   if [ "$input_actionfilter" ]; then
     rayname_var="\"rayName\": \"$input_rayid\",
-        \"action\": \"$input_actionfilter\",
-    "
+        \"action\": \"$input_actionfilter\","
   else
     rayname_var="\"rayName\": \"$input_rayid\","
   fi
@@ -613,8 +608,7 @@ fw_analytics_hrs() {
 
   if [ "$input_actionfilter" ]; then
     rayname_var="\"rayName\": \"$input_rayid\",
-        \"action\": \"$input_actionfilter\",
-    "
+        \"action\": \"$input_actionfilter\","
   else
     rayname_var="\"rayName\": \"$input_rayid\","
   fi
