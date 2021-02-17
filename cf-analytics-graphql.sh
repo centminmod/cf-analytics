@@ -24,6 +24,216 @@ if [[ -f $(which yum) && ! -f /usr/bin/datamash ]]; then
   yum -y -q install datamash
 fi
 
+ip_analytics_days() {
+  DATANODE='firewallEventsAdaptiveGroups'
+  since=$1
+  input_ip=$2
+  back_seconds=$((86400 * $since))
+  end_epoch=$(TZ=UTC date +'%s')
+  let start_epoch=$end_epoch-$back_seconds
+  # 1s
+  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  # 1d
+  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
+  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  ZoneID="$zid"
+  global_key="$cfkey"
+  Email="$cfemail"
+
+  PAYLOAD='{ "query":
+    "query {
+      viewer {
+        zones(filter: {zoneTag: $zoneTag}) {
+          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [count_DESC]) {
+            dimensions {
+              action
+              botScore
+              botScoreSrcName
+              source
+              datetime
+              clientIP
+              clientAsn
+              clientCountryName
+              edgeColoName
+              clientRequestHTTPProtocol
+              clientRequestHTTPHost
+              clientRequestPath
+              clientRequestQuery
+              clientRequestScheme
+              clientRequestHTTPMethodName
+              clientRefererHost
+              clientRefererPath
+              clientRefererQuery
+              clientRefererScheme
+              edgeResponseStatus
+              clientASNDescription
+              userAgent
+              kind
+              matchIndex
+              originResponseStatus
+              ruleId
+            }
+          }
+        }
+      }
+    }",'
+  PAYLOAD="$PAYLOAD
+  
+    \"variables\": {
+      \"zoneTag\": \"$ZoneID\",
+      \"filter\": {
+        \"clientIP\": \"$input_ip\",
+        \"date_gt\": \"$start_date\",
+        \"date_lt\": \"$end_date\"
+      }
+    }
+  }"
+
+if [[ "$DEBUG" = [yY] ]]; then
+  echo
+  echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
+  echo
+fi
+
+if [[ "$CF_GLOBAL_TOKEN" = [yY] ]]; then
+  curl -4sX POST -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGFW"
+  cat "$CF_LOGFW" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOGFW" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
+else
+  curl -4sX POST -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGFW"
+  cat "$CF_LOGFW" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOGFW" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
+fi
+
+echo "------------------------------------------------------------------"
+echo "Cloudflare Firewall"
+echo "------------------------------------------------------------------"
+echo "since: $start_date"
+echo "until: $end_date"
+echo "------------------------------------------------------------------"
+echo "Firewall Events for Request IP: $input_ip"
+echo "------------------------------------------------------------------"
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][]'
+
+}
+
+ip_analytics() {
+  DATANODE='firewallEventsAdaptiveGroups'
+  since=$1
+  input_ip=$2
+  back_seconds=$((60 * 60 * $since))
+  end_epoch=$(TZ=UTC date +'%s')
+  let start_epoch=$end_epoch-$back_seconds
+  # 1s
+  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  # 1d
+  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
+  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  ZoneID="$zid"
+  global_key="$cfkey"
+  Email="$cfemail"
+
+  PAYLOAD='{ "query":
+    "query {
+      viewer {
+        zones(filter: {zoneTag: $zoneTag}) {
+          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [count_DESC]) {
+            dimensions {
+              action
+              botScore
+              botScoreSrcName
+              source
+              datetime
+              clientIP
+              clientAsn
+              clientCountryName
+              edgeColoName
+              clientRequestHTTPProtocol
+              clientRequestHTTPHost
+              clientRequestPath
+              clientRequestQuery
+              clientRequestScheme
+              clientRequestHTTPMethodName
+              clientRefererHost
+              clientRefererPath
+              clientRefererQuery
+              clientRefererScheme
+              edgeResponseStatus
+              clientASNDescription
+              userAgent
+              kind
+              matchIndex
+              originResponseStatus
+              ruleId
+            }
+          }
+        }
+      }
+    }",'
+  PAYLOAD="$PAYLOAD
+  
+    \"variables\": {
+      \"zoneTag\": \"$ZoneID\",
+      \"filter\": {
+        \"clientIP\": \"$input_ip\",
+        \"datetime_geq\": \"$start_date\",
+        \"datetime_leq\": \"$end_date\"
+      }
+    }
+  }"
+
+if [[ "$DEBUG" = [yY] ]]; then
+  echo
+  echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
+  echo
+fi
+
+if [[ "$CF_GLOBAL_TOKEN" = [yY] ]]; then
+  curl -4sX POST -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGFW"
+  cat "$CF_LOGFW" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOGFW" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
+else
+  curl -4sX POST -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGFW"
+  cat "$CF_LOGFW" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOGFW" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
+fi
+
+echo "------------------------------------------------------------------"
+echo "Cloudflare Firewall"
+echo "------------------------------------------------------------------"
+echo "since: $start_date"
+echo "until: $end_date"
+echo "------------------------------------------------------------------"
+echo "Firewall Events for Request IP: $input_ip"
+echo "------------------------------------------------------------------"
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][]'
+
+}
+
 fw_analytics_days() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
@@ -917,10 +1127,18 @@ case "$1" in
   rayid-days )
     fw_analytics_days "$2" "$3"
     ;;
+  ip-hrs )
+    ip_analytics "$2" "$3"
+    ;;
+  ip-days )
+    ip_analytics_days "$2" "$3"
+    ;;
   * )
     echo "$0 hrs 72"
     echo "$0 days 3"
     echo "$0 rayid-hrs 72 cfrayid"
     echo "$0 rayid-days 3 cfrayid"
+    echo "$0 ip-hrs 72 request-ip"
+    echo "$0 ip-days 3 request-ip"
     ;;
 esac
