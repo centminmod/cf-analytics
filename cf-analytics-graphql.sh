@@ -28,6 +28,7 @@ ip_analytics_hrs() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ip=$2
+  input_actionfilter=$3
   back_seconds=$((60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
@@ -37,6 +38,14 @@ ip_analytics_hrs() {
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$input_actionfilter" ]; then
+    client_var="\"clientIP\": \"$input_ip\",
+        \"action\": \"$input_actionfilter\",
+    "
+  else
+    client_var="\"clientIP\": \"$input_ip\","
+  fi
 
   ZoneID="$zid"
   global_key="$cfkey"
@@ -135,6 +144,7 @@ ip_analytics_days() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ip=$2
+  input_actionfilter=$3
   back_seconds=$((86400 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
@@ -144,6 +154,14 @@ ip_analytics_days() {
   # 1d
   start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$input_actionfilter" ]; then
+    client_var="\"clientIP\": \"$input_ip\",
+        \"action\": \"$input_actionfilter\",
+    "
+  else
+    client_var="\"clientIP\": \"$input_ip\","
+  fi
 
   ZoneID="$zid"
   global_key="$cfkey"
@@ -240,6 +258,7 @@ ip_analytics() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ip=$2
+  input_actionfilter=$3
   back_seconds=$((60 * 60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
@@ -249,6 +268,14 @@ ip_analytics() {
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$input_actionfilter" ]; then
+    client_var="\"clientIP\": \"$input_ip\",
+        \"action\": \"$input_actionfilter\",
+    "
+  else
+    client_var="\"clientIP\": \"$input_ip\","
+  fi
 
   ZoneID="$zid"
   global_key="$cfkey"
@@ -296,7 +323,7 @@ ip_analytics() {
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
       \"filter\": {
-        \"clientIP\": \"$input_ip\",
+        $client_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -345,6 +372,7 @@ fw_analytics_days() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_rayid=$2
+  input_actionfilter=$3
   back_seconds=$((86400 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
@@ -354,6 +382,14 @@ fw_analytics_days() {
   # 1d
   start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$input_actionfilter" ]; then
+    rayname_var="\"rayName\": \"$input_rayid\",
+        \"action\": \"$input_actionfilter\",
+    "
+  else
+    rayname_var="\"rayName\": \"$input_rayid\","
+  fi
 
   ZoneID="$zid"
   global_key="$cfkey"
@@ -401,7 +437,7 @@ fw_analytics_days() {
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
       \"filter\": {
-        \"rayName\": \"$input_rayid\",
+        $rayname_var
         \"date_gt\": \"$start_date\",
         \"date_lt\": \"$end_date\"
       }
@@ -450,6 +486,7 @@ fw_analytics() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_rayid=$2
+  input_actionfilter=$3
   back_seconds=$((60 * 60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
@@ -459,6 +496,14 @@ fw_analytics() {
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$input_actionfilter" ]; then
+    rayname_var="\"rayName\": \"$input_rayid\",
+        \"action\": \"$input_actionfilter\",
+    "
+  else
+    rayname_var="\"rayName\": \"$input_rayid\","
+  fi
 
   ZoneID="$zid"
   global_key="$cfkey"
@@ -506,7 +551,7 @@ fw_analytics() {
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
       \"filter\": {
-        \"rayName\": \"$input_rayid\",
+        $rayname_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -555,6 +600,7 @@ fw_analytics_hrs() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_rayid=$2
+  input_actionfilter=$3
   back_seconds=$((60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
@@ -564,6 +610,14 @@ fw_analytics_hrs() {
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$input_actionfilter" ]; then
+    rayname_var="\"rayName\": \"$input_rayid\",
+        \"action\": \"$input_actionfilter\",
+    "
+  else
+    rayname_var="\"rayName\": \"$input_rayid\","
+  fi
 
   ZoneID="$zid"
   global_key="$cfkey"
@@ -613,7 +667,7 @@ fw_analytics_hrs() {
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
       \"filter\": {
-        \"rayName\": \"$input_rayid\",
+        $rayname_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -1336,31 +1390,50 @@ case "$1" in
     get_analytics_days "$2"
     ;;
   rayid-mins )
-    fw_analytics_hrs "$2" "$3"
+    fw_analytics_hrs "$2" "$3" "$4"
     ;;
   rayid-hrs )
-    fw_analytics "$2" "$3"
+    fw_analytics "$2" "$3" "$4"
     ;;
   rayid-days )
-    fw_analytics_days "$2" "$3"
+    fw_analytics_days "$2" "$3" "$4"
     ;;
   ip-mins )
-    ip_analytics_hrs "$2" "$3"
+    ip_analytics_hrs "$2" "$3" "$4"
     ;;
   ip-hrs )
-    ip_analytics "$2" "$3"
+    ip_analytics "$2" "$3" "$4"
     ;;
   ip-days )
-    ip_analytics_days "$2" "$3"
+    ip_analytics_days "$2" "$3" "$4"
     ;;
   * )
+    echo "Usage:"
+    echo
+    echo "-------------------------------"
+    echo "Zone Analytics"
+    echo "-------------------------------"
     echo "$0 hrs 72"
     echo "$0 days 3"
+    echo
+    echo "-------------------------------"
+    echo "Firewall Events"
+    echo "-------------------------------"
     echo "$0 rayid-mins 60 cfrayid"
     echo "$0 rayid-hrs 72 cfrayid"
     echo "$0 rayid-days 3 cfrayid"
     echo "$0 ip-mins 60 request-ip"
     echo "$0 ip-hrs 72 request-ip"
     echo "$0 ip-days 3 request-ip"
+    echo
+    echo "-------------------------------"
+    echo "Firewall Events filter by action"
+    echo "-------------------------------"
+    echo "$0 rayid-mins 60 cfrayid {drop|sumulate|challenge|jschallenge|allow}"
+    echo "$0 rayid-hrs 72 cfrayid {drop|sumulate|challenge|jschallenge|allow}"
+    echo "$0 rayid-days 3 cfrayid {drop|sumulate|challenge|jschallenge|allow}"
+    echo "$0 ip-mins 60 request-ip {drop|sumulate|challenge|jschallenge|allow}"
+    echo "$0 ip-hrs 72 request-ip {drop|sumulate|challenge|jschallenge|allow}"
+    echo "$0 ip-days 3 request-ip {drop|sumulate|challenge|jschallenge|allow}"
     ;;
 esac
