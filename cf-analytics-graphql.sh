@@ -85,8 +85,8 @@ fw_analytics_days() {
       \"zoneTag\": \"$ZoneID\",
       \"filter\": {
         \"rayName\": \"$input_rayid\",
-        \"date_geq\": \"$start_date\",
-        \"date_leq\": \"$end_date\"
+        \"date_gt\": \"$start_date\",
+        \"date_lt\": \"$end_date\"
       }
     }
   }"
