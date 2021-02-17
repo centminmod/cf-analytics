@@ -74,7 +74,6 @@ ip_analytics_hrs() {
               clientASNDescription
               userAgent
               kind
-              matchIndex
               originResponseStatus
               ruleId
               rayName
@@ -179,7 +178,6 @@ ip_analytics_days() {
               clientASNDescription
               userAgent
               kind
-              matchIndex
               originResponseStatus
               ruleId
               rayName
@@ -285,7 +283,6 @@ ip_analytics() {
               clientASNDescription
               userAgent
               kind
-              matchIndex
               originResponseStatus
               ruleId
               rayName
@@ -391,7 +388,6 @@ fw_analytics_days() {
               clientASNDescription
               userAgent
               kind
-              matchIndex
               originResponseStatus
               ruleId
               rayName
@@ -497,7 +493,6 @@ fw_analytics() {
               clientASNDescription
               userAgent
               kind
-              matchIndex
               originResponseStatus
               ruleId
               rayName
@@ -606,7 +601,6 @@ fw_analytics_hrs() {
               clientASNDescription
               userAgent
               kind
-              matchIndex
               originResponseStatus
               ruleId
               rayName
