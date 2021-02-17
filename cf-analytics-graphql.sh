@@ -77,6 +77,7 @@ ip_analytics_hrs() {
               matchIndex
               originResponseStatus
               ruleId
+              rayName
           }
         }
       }
@@ -181,6 +182,7 @@ ip_analytics_days() {
               matchIndex
               originResponseStatus
               ruleId
+              rayName
             }
           }
         }
@@ -286,6 +288,7 @@ ip_analytics() {
               matchIndex
               originResponseStatus
               ruleId
+              rayName
             }
           }
         }
@@ -391,6 +394,7 @@ fw_analytics_days() {
               matchIndex
               originResponseStatus
               ruleId
+              rayName
             }
           }
         }
@@ -496,6 +500,7 @@ fw_analytics() {
               matchIndex
               originResponseStatus
               ruleId
+              rayName
             }
           }
         }
@@ -604,6 +609,7 @@ fw_analytics_hrs() {
               matchIndex
               originResponseStatus
               ruleId
+              rayName
           }
         }
       }
