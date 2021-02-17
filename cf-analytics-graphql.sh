@@ -125,7 +125,7 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "Firewall Events for Request IP: $input_ip"
 echo "------------------------------------------------------------------"
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][]'
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn]'
 
 }
 
@@ -230,7 +230,7 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "Firewall Events for Request IP: $input_ip"
 echo "------------------------------------------------------------------"
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][]'
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn]'
 
 }
 
@@ -335,7 +335,7 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "Firewall Events for CF RayID: $input_rayid"
 echo "------------------------------------------------------------------"
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][]'
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn]'
 
 }
 
@@ -440,7 +440,7 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "Firewall Events for CF RayID: $input_rayid"
 echo "------------------------------------------------------------------"
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn][]'
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones | .[] | .[$dn]'
 
 }
 
