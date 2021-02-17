@@ -32,8 +32,8 @@ ip_analytics_hrs() {
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
   # 1s
-  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
-  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%M:%SZ')
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
@@ -139,8 +139,8 @@ ip_analytics_days() {
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
   # 1s
-  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
-  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%M:%SZ')
   # 1d
   start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
@@ -244,8 +244,8 @@ ip_analytics() {
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
   # 1s
-  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
-  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%M:%SZ')
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
@@ -349,8 +349,8 @@ fw_analytics_days() {
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
   # 1s
-  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
-  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%M:%SZ')
   # 1d
   start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
@@ -454,8 +454,8 @@ fw_analytics() {
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
   # 1s
-  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
-  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%M:%SZ')
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
@@ -559,8 +559,8 @@ fw_analytics_hrs() {
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
   # 1s
-  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
-  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%M:%SZ')
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
@@ -664,8 +664,8 @@ get_analytics() {
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
   # 1s
-  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
-  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%M:%SZ')
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
@@ -989,8 +989,8 @@ get_analytics_days() {
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
   # 1s
-  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%m:%SZ')
-  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%m:%SZ')
+  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%M:%SZ')
   # 1d
   start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
