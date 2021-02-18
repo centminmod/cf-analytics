@@ -176,7 +176,7 @@ ip_analytics_days() {
     "query {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
-          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [count_DESC]) {
+          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [datetime_ASC]) {
             dimensions {
               action
               botScore
@@ -296,7 +296,7 @@ ip_analytics() {
     "query {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
-          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [count_DESC]) {
+          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [datetime_ASC]) {
             dimensions {
               action
               botScore
@@ -416,7 +416,7 @@ fw_analytics_days() {
     "query {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
-          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [count_DESC]) {
+          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [datetime_ASC]) {
             dimensions {
               action
               botScore
@@ -536,7 +536,7 @@ fw_analytics() {
     "query {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
-          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [count_DESC]) {
+          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [datetime_ASC]) {
             dimensions {
               action
               botScore
