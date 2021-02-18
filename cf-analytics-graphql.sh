@@ -127,14 +127,21 @@ else
   fi
 fi
 
+if [ -f "$CF_LOGFW" ]; then
+  json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
+fi
 echo "------------------------------------------------------------------"
 echo "Cloudflare Firewall"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
-echo "Firewall Events for Cient IP: $input_ip"
+echo "${json_object_count} Firewall Events for Cient IP: $input_ip"
 echo "------------------------------------------------------------------"
+# listing non-json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
+echo "------------------------------------------------------------------"
+# listing json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 
 }
@@ -240,14 +247,21 @@ else
   fi
 fi
 
+if [ -f "$CF_LOGFW" ]; then
+  json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
+fi
 echo "------------------------------------------------------------------"
 echo "Cloudflare Firewall"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
-echo "Firewall Events for Request IP: $input_ip"
+echo "${json_object_count} Firewall Events for Request IP: $input_ip"
 echo "------------------------------------------------------------------"
+# listing non-json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
+echo "------------------------------------------------------------------"
+# listing json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 
 }
@@ -353,14 +367,21 @@ else
   fi
 fi
 
+if [ -f "$CF_LOGFW" ]; then
+  json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
+fi
 echo "------------------------------------------------------------------"
 echo "Cloudflare Firewall"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
-echo "Firewall Events for Request IP: $input_ip"
+echo "${json_object_count} Firewall Events for Request IP: $input_ip"
 echo "------------------------------------------------------------------"
+# listing non-json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
+echo "------------------------------------------------------------------"
+# listing json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 
 }
@@ -466,14 +487,21 @@ else
   fi
 fi
 
+if [ -f "$CF_LOGFW" ]; then
+  json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
+fi
 echo "------------------------------------------------------------------"
 echo "Cloudflare Firewall"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
-echo "Firewall Events for CF RayID: $input_rayid"
+echo "${json_object_count} Firewall Events for CF RayID: $input_rayid"
 echo "------------------------------------------------------------------"
+# listing non-json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
+echo "------------------------------------------------------------------"
+# listing json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 
 }
@@ -579,14 +607,21 @@ else
   fi
 fi
 
+if [ -f "$CF_LOGFW" ]; then
+  json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
+fi
 echo "------------------------------------------------------------------"
 echo "Cloudflare Firewall"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
-echo "Firewall Events for CF RayID: $input_rayid"
+echo "${json_object_count} Firewall Events for CF RayID: $input_rayid"
 echo "------------------------------------------------------------------"
+# listing non-json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
+echo "------------------------------------------------------------------"
+# listing json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 
 }
@@ -694,14 +729,21 @@ else
   fi
 fi
 
+if [ -f "$CF_LOGFW" ]; then
+  json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
+fi
 echo "------------------------------------------------------------------"
 echo "Cloudflare Firewall"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
-echo "Firewall Events for CF RayID: $input_rayid"
+echo "${json_object_count} Firewall Events for CF RayID: $input_rayid"
 echo "------------------------------------------------------------------"
+# listing non-json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
+echo "------------------------------------------------------------------"
+# listing json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 
 }
