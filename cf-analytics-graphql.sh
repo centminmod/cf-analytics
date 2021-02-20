@@ -25,6 +25,7 @@ if [[ -f $(which yum) && ! -f /usr/bin/datamash ]]; then
 fi
 
 ip_analytics_hrs() {
+  input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ip=$2
@@ -55,8 +56,8 @@ ip_analytics_hrs() {
       viewer {
         zones(filter: { zoneTag: $zoneTag }) {
           firewallEventsAdaptive(
-            filter: $filter
-            limit: 10
+            filter: $filter,
+            limit: $limit,
             orderBy: [datetime_ASC]
           ) {
               action
@@ -93,6 +94,7 @@ ip_analytics_hrs() {
   
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
+      \"limit\": $input_limit,
       \"filter\": {
         \"clientIP\": \"$input_ip\",
         \"datetime_geq\": \"$start_date\",
@@ -147,6 +149,7 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 ip_analytics_days() {
+  input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ip=$2
@@ -176,7 +179,11 @@ ip_analytics_days() {
     "query {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
-          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [datetime_ASC]) {
+          firewallEventsAdaptiveGroups(
+            limit: $limit,
+            filter: $filter,
+            orderBy: [datetime_ASC]
+            ) {
             dimensions {
               action
               botScore
@@ -213,6 +220,7 @@ ip_analytics_days() {
   
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
+      \"limit\": $input_limit,
       \"filter\": {
         \"clientIP\": \"$input_ip\",
         \"date_gt\": \"$start_date\",
@@ -267,6 +275,7 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 ip_analytics() {
+  input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ip=$2
@@ -296,7 +305,11 @@ ip_analytics() {
     "query {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
-          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [datetime_ASC]) {
+          firewallEventsAdaptiveGroups(
+            limit: $limit,
+            filter: $filter,
+            orderBy: [datetime_ASC]
+            ) {
             dimensions {
               action
               botScore
@@ -333,6 +346,7 @@ ip_analytics() {
   
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
+      \"limit\": $input_limit,
       \"filter\": {
         $client_var
         \"datetime_geq\": \"$start_date\",
@@ -387,6 +401,7 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 fw_analytics_days() {
+  input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_rayid=$2
@@ -416,7 +431,11 @@ fw_analytics_days() {
     "query {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
-          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [datetime_ASC]) {
+          firewallEventsAdaptiveGroups(
+            limit: $limit,
+            filter: $filter,
+            orderBy: [datetime_ASC]
+            ) {
             dimensions {
               action
               botScore
@@ -453,6 +472,7 @@ fw_analytics_days() {
   
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
+      \"limit\": $input_limit,
       \"filter\": {
         $rayname_var
         \"date_gt\": \"$start_date\",
@@ -507,6 +527,7 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 fw_analytics() {
+  input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_rayid=$2
@@ -536,7 +557,11 @@ fw_analytics() {
     "query {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
-          firewallEventsAdaptiveGroups(limit: 1000, filter: $filter, orderBy: [datetime_ASC]) {
+          firewallEventsAdaptiveGroups(
+            limit: $limit,
+            filter: $filter,
+            orderBy: [datetime_ASC]
+            ) {
             dimensions {
               action
               botScore
@@ -573,6 +598,7 @@ fw_analytics() {
   
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
+      \"limit\": $input_limit,
       \"filter\": {
         $rayname_var
         \"datetime_geq\": \"$start_date\",
@@ -627,6 +653,7 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 fw_analytics_hrs() {
+  input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_rayid=$2
@@ -657,8 +684,8 @@ fw_analytics_hrs() {
       viewer {
         zones(filter: { zoneTag: $zoneTag }) {
           firewallEventsAdaptive(
-            filter: $filter
-            limit: 10
+            filter: $filter,
+            limit: $limit,
             orderBy: [datetime_ASC]
           ) {
               action
@@ -695,6 +722,7 @@ fw_analytics_hrs() {
   
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
+      \"limit\": $input_limit,
       \"filter\": {
         $rayname_var
         \"datetime_geq\": \"$start_date\",
@@ -749,6 +777,7 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 get_analytics() {
+  input_limit="${4:-10000}"
   since=$1
   back_seconds=$((60 * 60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
@@ -769,8 +798,8 @@ get_analytics() {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
           httpRequests1hGroups(
-            limit: 10000
-            filter: $filter
+            limit: $limit,
+            filter: $filter,
           ) {
             sum {
               browserMap {
@@ -828,6 +857,7 @@ get_analytics() {
   
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
+      \"limit\": $input_limit,
       \"filter\": {
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
@@ -1073,6 +1103,7 @@ echo
 }
 
 get_analytics_days() {
+  input_limit="${4:-10000}"
   DATANODE='httpRequests1dGroups'
   since=$1
   back_seconds=$((86400 * $since))
@@ -1094,7 +1125,7 @@ get_analytics_days() {
       viewer {
         zones(filter: {zoneTag: $zoneTag}) {
           httpRequests1dGroups(
-            limit: 10000
+            limit: $limit,
             filter: $filter
           ) {
             sum {
@@ -1153,6 +1184,7 @@ get_analytics_days() {
   
     \"variables\": {
       \"zoneTag\": \"$ZoneID\",
+      \"limit\": $input_limit,
       \"filter\": {
         \"date_gt\": \"$start_date\",
         \"date_lt\": \"$end_date\"
@@ -1426,35 +1458,35 @@ case "$1" in
     get_analytics_days "$2"
     ;;
   rayid-mins )
-    fw_analytics_hrs "$2" "$3" "$4"
+    fw_analytics_hrs "$2" "$3" "$4" "$5"
     ;;
   rayid-hrs )
-    fw_analytics "$2" "$3" "$4"
+    fw_analytics "$2" "$3" "$4" "$5"
     ;;
   rayid-days )
-    fw_analytics_days "$2" "$3" "$4"
+    fw_analytics_days "$2" "$3" "$4" "$5"
     ;;
   ip-mins )
-    ip_analytics_hrs "$2" "$3" "$4"
+    ip_analytics_hrs "$2" "$3" "$4" "$5"
     ;;
   ip-hrs )
-    ip_analytics "$2" "$3" "$4"
+    ip_analytics "$2" "$3" "$4" "$5"
     ;;
   ip-days )
-    ip_analytics_days "$2" "$3" "$4"
+    ip_analytics_days "$2" "$3" "$4" "$5"
     ;;
   * )
     echo "Usage:"
     echo
-    echo "-------------------------------"
+    echo "---------------------------------------------"
     echo "Zone Analytics"
-    echo "-------------------------------"
+    echo "---------------------------------------------"
     echo "$0 hrs 72"
     echo "$0 days 3"
     echo
-    echo "-------------------------------"
+    echo "---------------------------------------------"
     echo "Firewall Events"
-    echo "-------------------------------"
+    echo "---------------------------------------------"
     echo "$0 rayid-mins 60 cfrayid"
     echo "$0 rayid-hrs 72 cfrayid"
     echo "$0 rayid-days 3 cfrayid"
@@ -1462,14 +1494,24 @@ case "$1" in
     echo "$0 ip-hrs 72 request-ip"
     echo "$0 ip-days 3 request-ip"
     echo
-    echo "-------------------------------"
+    echo "---------------------------------------------"
     echo "Firewall Events filter by action"
-    echo "-------------------------------"
+    echo "---------------------------------------------"
     echo "$0 rayid-mins 60 cfrayid {drop|sumulate|challenge|jschallenge|allow}"
     echo "$0 rayid-hrs 72 cfrayid {drop|sumulate|challenge|jschallenge|allow}"
     echo "$0 rayid-days 3 cfrayid {drop|sumulate|challenge|jschallenge|allow}"
     echo "$0 ip-mins 60 request-ip {drop|sumulate|challenge|jschallenge|allow}"
     echo "$0 ip-hrs 72 request-ip {drop|sumulate|challenge|jschallenge|allow}"
     echo "$0 ip-days 3 request-ip {drop|sumulate|challenge|jschallenge|allow}"
+    echo
+    echo "---------------------------------------------"
+    echo "Firewall Events filter by action + limit XX"
+    echo "---------------------------------------------"
+    echo "$0 rayid-mins 60 cfrayid {drop|sumulate|challenge|jschallenge|allow} 100"
+    echo "$0 rayid-hrs 72 cfrayid {drop|sumulate|challenge|jschallenge|allow} 100"
+    echo "$0 rayid-days 3 cfrayid {drop|sumulate|challenge|jschallenge|allow} 100"
+    echo "$0 ip-mins 60 request-ip {drop|sumulate|challenge|jschallenge|allow} 100"
+    echo "$0 ip-hrs 72 request-ip {drop|sumulate|challenge|jschallenge|allow} 100"
+    echo "$0 ip-days 3 request-ip {drop|sumulate|challenge|jschallenge|allow} 100"
     ;;
 esac
