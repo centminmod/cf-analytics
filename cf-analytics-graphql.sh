@@ -25,6 +25,7 @@ if [[ -f $(which yum) && ! -f /usr/bin/datamash ]]; then
 fi
 
 ip_analytics_hrs() {
+  req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
@@ -39,6 +40,12 @@ ip_analytics_hrs() {
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$req_hostname" ]; then
+    hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
+  else
+    hostname_var=
+  fi
 
   if [ "$input_actionfilter" ]; then
     client_var="\"clientIP\": \"$input_ip\",
@@ -97,6 +104,7 @@ ip_analytics_hrs() {
       \"limit\": $input_limit,
       \"filter\": {
         \"clientIP\": \"$input_ip\",
+        $hostname_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -149,6 +157,7 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 ip_analytics_days() {
+  req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
@@ -163,6 +172,12 @@ ip_analytics_days() {
   # 1d
   start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$req_hostname" ]; then
+    hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
+  else
+    hostname_var=
+  fi
 
   if [ "$input_actionfilter" ]; then
     client_var="\"clientIP\": \"$input_ip\",
@@ -223,6 +238,7 @@ ip_analytics_days() {
       \"limit\": $input_limit,
       \"filter\": {
         \"clientIP\": \"$input_ip\",
+        $hostname_var
         \"date_gt\": \"$start_date\",
         \"date_lt\": \"$end_date\"
       }
@@ -275,6 +291,7 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 ip_analytics() {
+  req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
@@ -289,6 +306,12 @@ ip_analytics() {
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$req_hostname" ]; then
+    hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
+  else
+    hostname_var=
+  fi
 
   if [ "$input_actionfilter" ]; then
     client_var="\"clientIP\": \"$input_ip\",
@@ -349,6 +372,7 @@ ip_analytics() {
       \"limit\": $input_limit,
       \"filter\": {
         $client_var
+        $hostname_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -401,6 +425,7 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 fw_analytics_days() {
+  req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
@@ -415,6 +440,12 @@ fw_analytics_days() {
   # 1d
   start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$req_hostname" ]; then
+    hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
+  else
+    hostname_var=
+  fi
 
   if [ "$input_actionfilter" ]; then
     rayname_var="\"rayName\": \"$input_rayid\",
@@ -475,6 +506,7 @@ fw_analytics_days() {
       \"limit\": $input_limit,
       \"filter\": {
         $rayname_var
+        $hostname_var
         \"date_gt\": \"$start_date\",
         \"date_lt\": \"$end_date\"
       }
@@ -527,6 +559,7 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 fw_analytics() {
+  req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
@@ -541,6 +574,12 @@ fw_analytics() {
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$req_hostname" ]; then
+    hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
+  else
+    hostname_var=
+  fi
 
   if [ "$input_actionfilter" ]; then
     rayname_var="\"rayName\": \"$input_rayid\",
@@ -601,6 +640,7 @@ fw_analytics() {
       \"limit\": $input_limit,
       \"filter\": {
         $rayname_var
+        $hostname_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -653,6 +693,7 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 fw_analytics_hrs() {
+  req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
@@ -667,6 +708,12 @@ fw_analytics_hrs() {
   # 1d
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$req_hostname" ]; then
+    hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
+  else
+    hostname_var=
+  fi
 
   if [ "$input_actionfilter" ]; then
     rayname_var="\"rayName\": \"$input_rayid\",
@@ -725,6 +772,7 @@ fw_analytics_hrs() {
       \"limit\": $input_limit,
       \"filter\": {
         $rayname_var
+        $hostname_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -1458,22 +1506,22 @@ case "$1" in
     get_analytics_days "$2"
     ;;
   rayid-mins )
-    fw_analytics_hrs "$2" "$3" "$4" "$5"
+    fw_analytics_hrs "$2" "$3" "$4" "$5" "$6"
     ;;
   rayid-hrs )
-    fw_analytics "$2" "$3" "$4" "$5"
+    fw_analytics "$2" "$3" "$4" "$5" "$6"
     ;;
   rayid-days )
-    fw_analytics_days "$2" "$3" "$4" "$5"
+    fw_analytics_days "$2" "$3" "$4" "$5" "$6"
     ;;
   ip-mins )
-    ip_analytics_hrs "$2" "$3" "$4" "$5"
+    ip_analytics_hrs "$2" "$3" "$4" "$5" "$6"
     ;;
   ip-hrs )
-    ip_analytics "$2" "$3" "$4" "$5"
+    ip_analytics "$2" "$3" "$4" "$5" "$6"
     ;;
   ip-days )
-    ip_analytics_days "$2" "$3" "$4" "$5"
+    ip_analytics_days "$2" "$3" "$4" "$5" "$6"
     ;;
   * )
     echo "Usage:"
@@ -1497,21 +1545,31 @@ case "$1" in
     echo "---------------------------------------------"
     echo "Firewall Events filter by action"
     echo "---------------------------------------------"
-    echo "$0 rayid-mins 60 cfrayid {drop|sumulate|challenge|jschallenge|allow}"
-    echo "$0 rayid-hrs 72 cfrayid {drop|sumulate|challenge|jschallenge|allow}"
-    echo "$0 rayid-days 3 cfrayid {drop|sumulate|challenge|jschallenge|allow}"
-    echo "$0 ip-mins 60 request-ip {drop|sumulate|challenge|jschallenge|allow}"
-    echo "$0 ip-hrs 72 request-ip {drop|sumulate|challenge|jschallenge|allow}"
-    echo "$0 ip-days 3 request-ip {drop|sumulate|challenge|jschallenge|allow}"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|jschallenge|allow}"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|jschallenge|allow}"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|jschallenge|allow}"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|jschallenge|allow}"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|jschallenge|allow}"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|jschallenge|allow}"
     echo
     echo "---------------------------------------------"
     echo "Firewall Events filter by action + limit XX"
     echo "---------------------------------------------"
-    echo "$0 rayid-mins 60 cfrayid {drop|sumulate|challenge|jschallenge|allow} 100"
-    echo "$0 rayid-hrs 72 cfrayid {drop|sumulate|challenge|jschallenge|allow} 100"
-    echo "$0 rayid-days 3 cfrayid {drop|sumulate|challenge|jschallenge|allow} 100"
-    echo "$0 ip-mins 60 request-ip {drop|sumulate|challenge|jschallenge|allow} 100"
-    echo "$0 ip-hrs 72 request-ip {drop|sumulate|challenge|jschallenge|allow} 100"
-    echo "$0 ip-days 3 request-ip {drop|sumulate|challenge|jschallenge|allow} 100"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|jschallenge|allow} 100"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|jschallenge|allow} 100"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|jschallenge|allow} 100"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|jschallenge|allow} 100"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|jschallenge|allow} 100"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|jschallenge|allow} 100"
+    echo
+    echo "---------------------------------------------"
+    echo "Firewall Events filter by action + limit XX + hostname"
+    echo "---------------------------------------------"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|jschallenge|allow} 100 hostname"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|jschallenge|allow} 100 hostname"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|jschallenge|allow} 100 hostname"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|jschallenge|allow} 100 hostname"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|jschallenge|allow} 100 hostname"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|jschallenge|allow} 100 hostname"
     ;;
 esac
