@@ -437,6 +437,418 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 
 }
 
+ruleid_fw_analytics_days() {
+  req_hostname=$5
+  input_limit="${4:-100}"
+  DATANODE='firewallEventsAdaptiveGroups'
+  since=$1
+  input_ruleid=$2
+  input_actionfilter=$3
+  back_seconds=$((86400 * $since))
+  end_epoch=$(TZ=UTC date +'%s')
+  start_epoch=$((end_epoch-$back_seconds))
+  # 1s
+  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  # 1d
+  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
+  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$req_hostname" ]; then
+    hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
+  else
+    hostname_var=
+  fi
+
+  if [ "$input_actionfilter" ]; then
+    ruleid_var="\"ruleId\": \"$input_ruleid\",
+        \"action\": \"$input_actionfilter\","
+  else
+    ruleid_var="\"ruleId\": \"$input_ruleid\","
+  fi
+
+  ZoneID="$zid"
+  global_key="$cfkey"
+  Email="$cfemail"
+
+  PAYLOAD='{ "query":
+    "query {
+      viewer {
+        zones(filter: {zoneTag: $zoneTag}) {
+          firewallEventsAdaptiveGroups(
+            limit: $limit,
+            filter: $filter,
+            orderBy: [datetime_ASC]
+            ) {
+            dimensions {
+              action
+              botScore
+              botScoreSrcName
+              source
+              datetime
+              clientIP
+              clientAsn
+              clientCountryName
+              edgeColoName
+              clientRequestHTTPProtocol
+              clientRequestHTTPHost
+              clientRequestPath
+              clientRequestQuery
+              clientRequestScheme
+              clientRequestHTTPMethodName
+              clientRefererHost
+              clientRefererPath
+              clientRefererQuery
+              clientRefererScheme
+              edgeResponseStatus
+              clientASNDescription
+              userAgent
+              kind
+              originResponseStatus
+              ruleId
+              rayName
+            }
+          }
+        }
+      }
+    }",'
+  PAYLOAD="$PAYLOAD
+  
+    \"variables\": {
+      \"zoneTag\": \"$ZoneID\",
+      \"limit\": $input_limit,
+      \"filter\": {
+        $ruleid_var
+        $hostname_var
+        \"date_gt\": \"$start_date\",
+        \"date_lt\": \"$end_date\"
+      }
+    }
+  }"
+
+if [[ "$CF_ENTERPRISE" != [yY] ]]; then
+  PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
+
+if [[ "$DEBUG" = [yY] ]]; then
+  echo
+  echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
+  echo
+fi
+
+if [[ "$CF_GLOBAL_TOKEN" = [yY] ]]; then
+  curl -4sX POST -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGFW"
+  cat "$CF_LOGFW" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOGFW" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
+else
+  curl -4sX POST -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGFW"
+  cat "$CF_LOGFW" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOGFW" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
+fi
+
+if [ -f "$CF_LOGFW" ]; then
+  json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
+fi
+echo "------------------------------------------------------------------"
+echo "Cloudflare Firewall"
+echo "------------------------------------------------------------------"
+echo "since: $start_date"
+echo "until: $end_date"
+echo "------------------------------------------------------------------"
+echo "${json_object_count} Firewall Events for CF RayID: $input_ruleid"
+echo "------------------------------------------------------------------"
+# listing non-json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
+echo "------------------------------------------------------------------"
+# listing json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+
+}
+
+ruleid_fw_analytics() {
+  req_hostname=$5
+  input_limit="${4:-100}"
+  DATANODE='firewallEventsAdaptiveGroups'
+  since=$1
+  input_ruleid=$2
+  input_actionfilter=$3
+  back_seconds=$((60 * 60 * $since))
+  end_epoch=$(TZ=UTC date +'%s')
+  start_epoch=$((end_epoch-$back_seconds))
+  # 1s
+  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  # 1d
+  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
+  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$req_hostname" ]; then
+    hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
+  else
+    hostname_var=
+  fi
+
+  if [ "$input_actionfilter" ]; then
+    ruleid_var="\"ruleId\": \"$input_ruleid\",
+        \"action\": \"$input_actionfilter\","
+  else
+    ruleid_var="\"ruleId\": \"$input_ruleid\","
+  fi
+
+  ZoneID="$zid"
+  global_key="$cfkey"
+  Email="$cfemail"
+
+  PAYLOAD='{ "query":
+    "query {
+      viewer {
+        zones(filter: {zoneTag: $zoneTag}) {
+          firewallEventsAdaptiveGroups(
+            limit: $limit,
+            filter: $filter,
+            orderBy: [datetime_ASC]
+            ) {
+            dimensions {
+              action
+              botScore
+              botScoreSrcName
+              source
+              datetime
+              clientIP
+              clientAsn
+              clientCountryName
+              edgeColoName
+              clientRequestHTTPProtocol
+              clientRequestHTTPHost
+              clientRequestPath
+              clientRequestQuery
+              clientRequestScheme
+              clientRequestHTTPMethodName
+              clientRefererHost
+              clientRefererPath
+              clientRefererQuery
+              clientRefererScheme
+              edgeResponseStatus
+              clientASNDescription
+              userAgent
+              kind
+              originResponseStatus
+              ruleId
+              rayName
+            }
+          }
+        }
+      }
+    }",'
+  PAYLOAD="$PAYLOAD
+  
+    \"variables\": {
+      \"zoneTag\": \"$ZoneID\",
+      \"limit\": $input_limit,
+      \"filter\": {
+        $ruleid_var
+        $hostname_var
+        \"datetime_geq\": \"$start_date\",
+        \"datetime_leq\": \"$end_date\"
+      }
+    }
+  }"
+
+if [[ "$CF_ENTERPRISE" != [yY] ]]; then
+  PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
+
+if [[ "$DEBUG" = [yY] ]]; then
+  echo
+  echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
+  echo
+fi
+
+if [[ "$CF_GLOBAL_TOKEN" = [yY] ]]; then
+  curl -4sX POST -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGFW"
+  cat "$CF_LOGFW" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOGFW" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
+else
+  curl -4sX POST -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGFW"
+  cat "$CF_LOGFW" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOGFW" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
+fi
+
+if [ -f "$CF_LOGFW" ]; then
+  json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
+fi
+echo "------------------------------------------------------------------"
+echo "Cloudflare Firewall"
+echo "------------------------------------------------------------------"
+echo "since: $start_date"
+echo "until: $end_date"
+echo "------------------------------------------------------------------"
+echo "${json_object_count} Firewall Events for CF RayID: $input_ruleid"
+echo "------------------------------------------------------------------"
+# listing non-json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
+echo "------------------------------------------------------------------"
+# listing json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+
+}
+
+ruleid_fw_analytics_hrs() {
+  req_hostname=$5
+  input_limit="${4:-100}"
+  DATANODE='firewallEventsAdaptiveGroups'
+  since=$1
+  input_ruleid=$2
+  input_actionfilter=$3
+  back_seconds=$((60 * $since))
+  end_epoch=$(TZ=UTC date +'%s')
+  start_epoch=$((end_epoch-$back_seconds))
+  # 1s
+  start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%dT%H:%M:%SZ')
+  # 1d
+  #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
+  #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
+
+  if [ "$req_hostname" ]; then
+    hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
+  else
+    hostname_var=
+  fi
+
+  if [ "$input_actionfilter" ]; then
+    ruleid_var="\"ruleId\": \"$input_ruleid\",
+        \"action\": \"$input_actionfilter\","
+  else
+    ruleid_var="\"ruleId\": \"$input_ruleid\","
+  fi
+
+  ZoneID="$zid"
+  global_key="$cfkey"
+  Email="$cfemail"
+
+  PAYLOAD='{ "query":
+    "query ListFirewallEvents($zoneTag: string, $filter: FirewallEventsAdaptiveFilter_InputObject) {
+      viewer {
+        zones(filter: { zoneTag: $zoneTag }) {
+          firewallEventsAdaptive(
+            filter: $filter,
+            limit: $limit,
+            orderBy: [datetime_ASC]
+          ) {
+              action
+              botScore
+              botScoreSrcName
+              source
+              datetime
+              clientIP
+              clientAsn
+              clientCountryName
+              edgeColoName
+              clientRequestHTTPProtocol
+              clientRequestHTTPHost
+              clientRequestPath
+              clientRequestQuery
+              clientRequestScheme
+              clientRequestHTTPMethodName
+              clientRefererHost
+              clientRefererPath
+              clientRefererQuery
+              clientRefererScheme
+              edgeResponseStatus
+              clientASNDescription
+              userAgent
+              kind
+              originResponseStatus
+              ruleId
+              rayName
+          }
+        }
+      }
+    }",'
+  PAYLOAD="$PAYLOAD
+  
+    \"variables\": {
+      \"zoneTag\": \"$ZoneID\",
+      \"limit\": $input_limit,
+      \"filter\": {
+        $ruleid_var
+        $hostname_var
+        \"datetime_geq\": \"$start_date\",
+        \"datetime_leq\": \"$end_date\"
+      }
+    }
+  }"
+
+if [[ "$CF_ENTERPRISE" != [yY] ]]; then
+  PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
+
+if [[ "$DEBUG" = [yY] ]]; then
+  echo
+  echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
+  echo
+fi
+
+if [[ "$CF_GLOBAL_TOKEN" = [yY] ]]; then
+  curl -4sX POST -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGFW"
+  cat "$CF_LOGFW" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOGFW" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
+else
+  curl -4sX POST -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" --data "$(echo $PAYLOAD)" $ENDPOINT > "$CF_LOGFW"
+  cat "$CF_LOGFW" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cat "$CF_LOGFW" | sed -e "s|$ZoneID|zoneid|" | jq
+    echo
+  fi
+fi
+
+if [ -f "$CF_LOGFW" ]; then
+  json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
+fi
+echo "------------------------------------------------------------------"
+echo "Cloudflare Firewall"
+echo "------------------------------------------------------------------"
+echo "since: $start_date"
+echo "until: $end_date"
+echo "------------------------------------------------------------------"
+echo "${json_object_count} Firewall Events for CF RayID: $input_ruleid"
+echo "------------------------------------------------------------------"
+# listing non-json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
+echo "------------------------------------------------------------------"
+# listing json
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+
+}
+
 fw_analytics_days() {
   req_hostname=$5
   input_limit="${4:-100}"
@@ -1538,6 +1950,15 @@ case "$1" in
   days )
     get_analytics_days "$2"
     ;;
+  ruleid-mins )
+    ruleid_fw_analytics_hrs "$2" "$3" "$4" "$5" "$6"
+    ;;
+  ruleid-hrs )
+    ruleid_fw_analytics "$2" "$3" "$4" "$5" "$6"
+    ;;
+  ruleid-days )
+    ruleid_fw_analytics_days "$2" "$3" "$4" "$5" "$6"
+    ;;
   rayid-mins )
     fw_analytics_hrs "$2" "$3" "$4" "$5" "$6"
     ;;
@@ -1568,6 +1989,9 @@ case "$1" in
     echo "---------------------------------------------"
     echo "Firewall Events"
     echo "---------------------------------------------"
+    echo "$0 ruleid-mins 60 cfruleid"
+    echo "$0 ruleid-hrs 72 cfruleid"
+    echo "$0 ruleid-days 3 cfruleid"
     echo "$0 rayid-mins 60 cfrayid"
     echo "$0 rayid-hrs 72 cfrayid"
     echo "$0 rayid-days 3 cfrayid"
@@ -1578,6 +2002,9 @@ case "$1" in
     echo "---------------------------------------------"
     echo "Firewall Events filter by action"
     echo "---------------------------------------------"
+    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
+    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
+    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
     echo "$0 rayid-mins 60 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
     echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
     echo "$0 rayid-days 3 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
@@ -1588,6 +2015,9 @@ case "$1" in
     echo "---------------------------------------------"
     echo "Firewall Events filter by action + limit XX"
     echo "---------------------------------------------"
+    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
+    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
+    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
     echo "$0 rayid-mins 60 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
     echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
     echo "$0 rayid-days 3 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
@@ -1598,6 +2028,9 @@ case "$1" in
     echo "---------------------------------------------"
     echo "Firewall Events filter by action + limit XX + hostname"
     echo "---------------------------------------------"
+    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
+    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
+    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
     echo "$0 rayid-mins 60 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
     echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
     echo "$0 rayid-days 3 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
