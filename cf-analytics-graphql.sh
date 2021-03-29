@@ -17,12 +17,39 @@ CF_LOG='cm-analytics-graphql.log'
 CF_LOGARGO='cm-analytics-graphql-argo.log'
 CF_LOGARGOGEO='cm-analytics-graphql-argo-geo.log'
 CF_LOGFW='cm-analytics-graphql-firewall.log'
+CF_ZONEINFO='cf-zoneinfo.log'
 ENDPOINT='https://api.cloudflare.com/client/v4/graphql'
 DATANODE='httpRequests1hGroups'
 BROWSER_PV='n'
 
 if [[ -f $(which yum) && ! -f /usr/bin/datamash ]]; then
   yum -y -q install datamash
+fi
+
+if [[ "$CF_GLOBAL_TOKEN" = [yY] ]]; then
+  curl -4sX GET -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" "https://api.cloudflare.com/client/v4/zones/$zid" > "$CF_ZONEINFO"
+  cat "$CF_ZONEINFO" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cfplan=$(cat "$CF_ZONEINFO" | jq -r '.result.plan.legacy_id')
+    echo
+  fi
+else
+  curl -4sX GET -H "Authorization: Bearer $cfkey" -H "Content-Type: application/json" "https://api.cloudflare.com/client/v4/zones/$zid" > "$CF_ZONEINFO"
+  cat "$CF_ZONEINFO" | jq -r ' .errors[]' >/dev/null 2>&1
+  err=$?
+  if [[ "$err" -eq '0' ]]; then
+    echo
+    cfplan=$(cat "$CF_ZONEINFO" | jq -r '.result.plan.legacy_id')
+    echo
+  fi
+fi
+
+if [[ "$cfplan" = 'enterprise' ]]; then
+  CF_ENTERPRISE='y'
+else
+  CF_ENTERPRISE='n'
 fi
 
 ip_analytics_hrs() {
