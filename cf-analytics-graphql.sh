@@ -153,6 +153,15 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for Cient IP: $input_ip"
 echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shorter
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
 # listing non-json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
@@ -290,6 +299,15 @@ echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for Request IP: $input_ip"
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shorter
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
 # listing non-json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
@@ -429,6 +447,15 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for Request IP: $input_ip"
 echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shorter
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
 # listing non-json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
@@ -566,6 +593,15 @@ echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RayID: $input_ruleid"
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shorter
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
 # listing non-json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
@@ -705,6 +741,15 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RayID: $input_ruleid"
 echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shorter
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
 # listing non-json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
@@ -840,6 +885,15 @@ echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RayID: $input_ruleid"
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shorter
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
 # listing non-json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
@@ -979,6 +1033,15 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RayID: $input_rayid"
 echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shorter
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
 # listing non-json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
@@ -1117,6 +1180,15 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RayID: $input_rayid"
 echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shorter
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
 # listing non-json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
@@ -1252,6 +1324,15 @@ echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RayID: $input_rayid"
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shorter
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
 # listing non-json
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
