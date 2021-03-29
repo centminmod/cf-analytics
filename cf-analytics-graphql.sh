@@ -10,6 +10,7 @@
 # whether to use CF Global Account API Token or
 # new CF specific API Tokens (in beta right now)
 DEBUG='y'
+CF_ENTERPRISE='y'
 CF_GLOBAL_TOKEN='n'
 CF_ARGO='y'
 CF_LOG='cm-analytics-graphql.log'
@@ -110,6 +111,10 @@ ip_analytics_hrs() {
       }
     }
   }"
+
+if [[ "$CF_ENTERPRISE" != [yY] ]]; then
+  PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
 
 if [[ "$DEBUG" = [yY] ]]; then
   echo
@@ -245,6 +250,10 @@ ip_analytics_days() {
     }
   }"
 
+if [[ "$CF_ENTERPRISE" != [yY] ]]; then
+  PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
+
 if [[ "$DEBUG" = [yY] ]]; then
   echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
@@ -378,6 +387,10 @@ ip_analytics() {
       }
     }
   }"
+
+if [[ "$CF_ENTERPRISE" != [yY] ]]; then
+  PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
 
 if [[ "$DEBUG" = [yY] ]]; then
   echo
@@ -513,6 +526,10 @@ fw_analytics_days() {
     }
   }"
 
+if [[ "$CF_ENTERPRISE" != [yY] ]]; then
+  PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
+
 if [[ "$DEBUG" = [yY] ]]; then
   echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
@@ -647,6 +664,10 @@ fw_analytics() {
     }
   }"
 
+if [[ "$CF_ENTERPRISE" != [yY] ]]; then
+  PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
+
 if [[ "$DEBUG" = [yY] ]]; then
   echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
@@ -778,6 +799,10 @@ fw_analytics_hrs() {
       }
     }
   }"
+
+if [[ "$CF_ENTERPRISE" != [yY] ]]; then
+  PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
 
 if [[ "$DEBUG" = [yY] ]]; then
   echo
@@ -912,6 +937,10 @@ get_analytics() {
       }
     }
   }"
+
+if [[ "$CF_ENTERPRISE" != [yY] ]]; then
+  PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
 
 if [[ "$DEBUG" = [yY] ]]; then
   echo
@@ -1240,6 +1269,10 @@ get_analytics_days() {
     }
   }"
 
+if [[ "$CF_ENTERPRISE" != [yY] ]]; then
+  PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
+
 if [[ "$DEBUG" = [yY] ]]; then
   echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
@@ -1545,31 +1578,31 @@ case "$1" in
     echo "---------------------------------------------"
     echo "Firewall Events filter by action"
     echo "---------------------------------------------"
-    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|jschallenge|allow}"
-    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|jschallenge|allow}"
-    echo "$0 rayid-days 3 cfrayid {block|log|challenge|jschallenge|allow}"
-    echo "$0 ip-mins 60 request-ip {block|log|challenge|jschallenge|allow}"
-    echo "$0 ip-hrs 72 request-ip {block|log|challenge|jschallenge|allow}"
-    echo "$0 ip-days 3 request-ip {block|log|challenge|jschallenge|allow}"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow}"
     echo
     echo "---------------------------------------------"
     echo "Firewall Events filter by action + limit XX"
     echo "---------------------------------------------"
-    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|jschallenge|allow} 100"
-    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|jschallenge|allow} 100"
-    echo "$0 rayid-days 3 cfrayid {block|log|challenge|jschallenge|allow} 100"
-    echo "$0 ip-mins 60 request-ip {block|log|challenge|jschallenge|allow} 100"
-    echo "$0 ip-hrs 72 request-ip {block|log|challenge|jschallenge|allow} 100"
-    echo "$0 ip-days 3 request-ip {block|log|challenge|jschallenge|allow} 100"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100"
     echo
     echo "---------------------------------------------"
     echo "Firewall Events filter by action + limit XX + hostname"
     echo "---------------------------------------------"
-    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|jschallenge|allow} 100 hostname"
-    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|jschallenge|allow} 100 hostname"
-    echo "$0 rayid-days 3 cfrayid {block|log|challenge|jschallenge|allow} 100 hostname"
-    echo "$0 ip-mins 60 request-ip {block|log|challenge|jschallenge|allow} 100 hostname"
-    echo "$0 ip-hrs 72 request-ip {block|log|challenge|jschallenge|allow} 100 hostname"
-    echo "$0 ip-days 3 request-ip {block|log|challenge|jschallenge|allow} 100 hostname"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
     ;;
 esac
