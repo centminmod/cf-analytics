@@ -58,6 +58,7 @@ ip_analytics_hrs() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ip=$2
+  input_ip_check_multi=$(echo "$input_ip" | grep -q ','; echo $?)
   input_actionfilter=$3
   back_seconds=$((60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
@@ -75,7 +76,16 @@ ip_analytics_hrs() {
     hostname_var=
   fi
 
-  if [ "$input_actionfilter" ]; then
+  if [ "$input_ip_check_multi" -eq '0' ]; then
+    input_ip=$(echo $input_ip | sed 's/[^,]*/"&"/g')
+  fi
+
+  if [[ "$input_ip_check_multi" -eq '0' && "$input_actionfilter" ]]; then
+    client_var="\"clientIP_in\": [$input_ip],
+        \"action\": \"$input_actionfilter\","
+  elif [ "$input_ip_check_multi" -eq '0' ]; then
+    client_var="\"clientIP_in\": [$input_ip],"
+  elif [ "$input_actionfilter" ]; then
     client_var="\"clientIP\": \"$input_ip\",
         \"action\": \"$input_actionfilter\","
   else
@@ -203,6 +213,7 @@ ip_analytics_days() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ip=$2
+  input_ip_check_multi=$(echo "$input_ip" | grep -q ','; echo $?)
   input_actionfilter=$3
   back_seconds=$((86400 * $since))
   end_epoch=$(TZ=UTC date +'%s')
@@ -220,7 +231,16 @@ ip_analytics_days() {
     hostname_var=
   fi
 
-  if [ "$input_actionfilter" ]; then
+  if [ "$input_ip_check_multi" -eq '0' ]; then
+    input_ip=$(echo $input_ip | sed 's/[^,]*/"&"/g')
+  fi
+
+  if [[ "$input_ip_check_multi" -eq '0' && "$input_actionfilter" ]]; then
+    client_var="\"clientIP_in\": [$input_ip],
+        \"action\": \"$input_actionfilter\","
+  elif [ "$input_ip_check_multi" -eq '0' ]; then
+    client_var="\"clientIP_in\": [$input_ip],"
+  elif [ "$input_actionfilter" ]; then
     client_var="\"clientIP\": \"$input_ip\",
         \"action\": \"$input_actionfilter\","
   else
@@ -350,6 +370,7 @@ ip_analytics() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ip=$2
+  input_ip_check_multi=$(echo "$input_ip" | grep -q ','; echo $?)
   input_actionfilter=$3
   back_seconds=$((60 * 60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
@@ -367,7 +388,16 @@ ip_analytics() {
     hostname_var=
   fi
 
-  if [ "$input_actionfilter" ]; then
+  if [ "$input_ip_check_multi" -eq '0' ]; then
+    input_ip=$(echo $input_ip | sed 's/[^,]*/"&"/g')
+  fi
+
+  if [[ "$input_ip_check_multi" -eq '0' && "$input_actionfilter" ]]; then
+    client_var="\"clientIP_in\": [$input_ip],
+        \"action\": \"$input_actionfilter\","
+  elif [ "$input_ip_check_multi" -eq '0' ]; then
+    client_var="\"clientIP_in\": [$input_ip],"
+  elif [ "$input_actionfilter" ]; then
     client_var="\"clientIP\": \"$input_ip\",
         \"action\": \"$input_actionfilter\","
   else
