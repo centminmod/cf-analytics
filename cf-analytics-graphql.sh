@@ -190,6 +190,9 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for Cient IP: $input_ip"
 echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest + ruleId
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.ruleId)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
 # listing botscore x ASN counts shortest
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
@@ -346,6 +349,9 @@ echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for Request IP: $input_ip"
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest + ruleId
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.ruleId)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
 # listing botscore x ASN counts shortest
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
@@ -504,6 +510,9 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for Request IP: $input_ip"
 echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest + ruleId
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.ruleId)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
 # listing botscore x ASN counts shortest
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
@@ -527,6 +536,7 @@ ruleid_fw_analytics_days() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ruleid=$2
+  input_ruleid_check_multi=$(echo "$input_ruleid" | grep -q ','; echo $?)
   input_actionfilter=$3
   back_seconds=$((86400 * $since))
   end_epoch=$(TZ=UTC date +'%s')
@@ -544,7 +554,16 @@ ruleid_fw_analytics_days() {
     hostname_var=
   fi
 
-  if [ "$input_actionfilter" ]; then
+  if [ "$input_ruleid_check_multi" -eq '0' ]; then
+    input_ruleid=$(echo $input_ruleid | sed 's/[^,]*/"&"/g')
+  fi
+
+  if [[ "$input_ruleid_check_multi" -eq '0' && "$input_actionfilter" ]]; then
+    ruleid_var="\"ruleId_in\": [$input_ruleid],
+        \"action\": \"$input_actionfilter\","
+  elif [ "$input_ruleid_check_multi" -eq '0' ]; then
+    ruleid_var="\"ruleId_in\": [$input_ruleid],"
+  elif [ "$input_actionfilter" ]; then
     ruleid_var="\"ruleId\": \"$input_ruleid\",
         \"action\": \"$input_actionfilter\","
   else
@@ -651,6 +670,9 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RuleID: $input_ruleid"
 echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest + ruleId
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.ruleId)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
 # listing botscore x ASN counts shortest
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
@@ -674,6 +696,7 @@ ruleid_fw_analytics() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ruleid=$2
+  input_ruleid_check_multi=$(echo "$input_ruleid" | grep -q ','; echo $?)
   input_actionfilter=$3
   back_seconds=$((60 * 60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
@@ -691,7 +714,16 @@ ruleid_fw_analytics() {
     hostname_var=
   fi
 
-  if [ "$input_actionfilter" ]; then
+  if [ "$input_ruleid_check_multi" -eq '0' ]; then
+    input_ruleid=$(echo $input_ruleid | sed 's/[^,]*/"&"/g')
+  fi
+
+  if [[ "$input_ruleid_check_multi" -eq '0' && "$input_actionfilter" ]]; then
+    ruleid_var="\"ruleId_in\": [$input_ruleid],
+        \"action\": \"$input_actionfilter\","
+  elif [ "$input_ruleid_check_multi" -eq '0' ]; then
+    ruleid_var="\"ruleId_in\": [$input_ruleid],"
+  elif [ "$input_actionfilter" ]; then
     ruleid_var="\"ruleId\": \"$input_ruleid\",
         \"action\": \"$input_actionfilter\","
   else
@@ -798,6 +830,9 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RuleID: $input_ruleid"
 echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest + ruleId
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.ruleId)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
 # listing botscore x ASN counts shortest
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
@@ -821,6 +856,7 @@ ruleid_fw_analytics_hrs() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_ruleid=$2
+  input_ruleid_check_multi=$(echo "$input_ruleid" | grep -q ','; echo $?)
   input_actionfilter=$3
   back_seconds=$((60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
@@ -838,7 +874,16 @@ ruleid_fw_analytics_hrs() {
     hostname_var=
   fi
 
-  if [ "$input_actionfilter" ]; then
+  if [ "$input_ruleid_check_multi" -eq '0' ]; then
+    input_ruleid=$(echo $input_ruleid | sed 's/[^,]*/"&"/g')
+  fi
+
+  if [[ "$input_ruleid_check_multi" -eq '0' && "$input_actionfilter" ]]; then
+    ruleid_var="\"ruleId_in\": [$input_ruleid],
+        \"action\": \"$input_actionfilter\","
+  elif [ "$input_ruleid_check_multi" -eq '0' ]; then
+    ruleid_var="\"ruleId_in\": [$input_ruleid],"
+  elif [ "$input_actionfilter" ]; then
     ruleid_var="\"ruleId\": \"$input_ruleid\",
         \"action\": \"$input_actionfilter\","
   else
@@ -942,6 +987,9 @@ echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RuleID: $input_ruleid"
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest + ruleId
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.ruleId)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
 # listing botscore x ASN counts shortest
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
@@ -1100,6 +1148,9 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RayID: $input_rayid"
 echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest + ruleId
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.ruleId)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
 # listing botscore x ASN counts shortest
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
@@ -1257,6 +1308,9 @@ echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RayID: $input_rayid"
 echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest + ruleId
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.ruleId)"' | sort | uniq -c | sort -rn
+echo "------------------------------------------------------------------"
 # listing botscore x ASN counts shortest
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
@@ -1411,6 +1465,9 @@ echo "since: $start_date"
 echo "until: $end_date"
 echo "------------------------------------------------------------------"
 echo "${json_object_count} Firewall Events for CF RayID: $input_rayid"
+echo "------------------------------------------------------------------"
+# listing botscore x ASN counts shortest + ruleId
+cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.ruleId)"' | sort | uniq -c | sort -rn
 echo "------------------------------------------------------------------"
 # listing botscore x ASN counts shortest
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol)"' | sort | uniq -c | sort -rn
