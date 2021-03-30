@@ -966,6 +966,7 @@ fw_analytics_days() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_rayid=$2
+  input_rayid_check_multi=$(echo "$input_rayid" | grep -q ','; echo $?)
   input_actionfilter=$3
   back_seconds=$((86400 * $since))
   end_epoch=$(TZ=UTC date +'%s')
@@ -983,7 +984,16 @@ fw_analytics_days() {
     hostname_var=
   fi
 
-  if [ "$input_actionfilter" ]; then
+  if [ "$input_rayid_check_multi" -eq '0' ]; then
+    input_rayid=$(echo $input_rayid | sed 's/[^,]*/"&"/g')
+  fi
+
+  if [[ "$input_rayid_check_multi" -eq '0' && "$input_actionfilter" ]]; then
+    rayname_var="\"rayName_in\": [$input_rayid],
+        \"action\": \"$input_actionfilter\","
+  elif [ "$input_rayid_check_multi" -eq '0' ]; then
+    rayname_var="\"rayName_in\": [$input_rayid],"
+  elif [ "$input_actionfilter" ]; then
     rayname_var="\"rayName\": \"$input_rayid\",
         \"action\": \"$input_actionfilter\","
   else
@@ -1113,6 +1123,7 @@ fw_analytics() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_rayid=$2
+  input_rayid_check_multi=$(echo "$input_rayid" | grep -q ','; echo $?)
   input_actionfilter=$3
   back_seconds=$((60 * 60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
@@ -1130,7 +1141,16 @@ fw_analytics() {
     hostname_var=
   fi
 
-  if [ "$input_actionfilter" ]; then
+  if [ "$input_rayid_check_multi" -eq '0' ]; then
+    input_rayid=$(echo $input_rayid | sed 's/[^,]*/"&"/g')
+  fi
+
+  if [[ "$input_rayid_check_multi" -eq '0' && "$input_actionfilter" ]]; then
+    rayname_var="\"rayName_in\": [$input_rayid],
+        \"action\": \"$input_actionfilter\","
+  elif [ "$input_rayid_check_multi" -eq '0' ]; then
+    rayname_var="\"rayName_in\": [$input_rayid],"
+  elif [ "$input_actionfilter" ]; then
     rayname_var="\"rayName\": \"$input_rayid\",
         \"action\": \"$input_actionfilter\","
   else
@@ -1260,6 +1280,7 @@ fw_analytics_hrs() {
   DATANODE='firewallEventsAdaptiveGroups'
   since=$1
   input_rayid=$2
+  input_rayid_check_multi=$(echo "$input_rayid" | grep -q ','; echo $?)
   input_actionfilter=$3
   back_seconds=$((60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
@@ -1277,7 +1298,16 @@ fw_analytics_hrs() {
     hostname_var=
   fi
 
-  if [ "$input_actionfilter" ]; then
+  if [ "$input_rayid_check_multi" -eq '0' ]; then
+    input_rayid=$(echo $input_rayid | sed 's/[^,]*/"&"/g')
+  fi
+
+  if [[ "$input_rayid_check_multi" -eq '0' && "$input_actionfilter" ]]; then
+    rayname_var="\"rayName_in\": [$input_rayid],
+        \"action\": \"$input_actionfilter\","
+  elif [ "$input_rayid_check_multi" -eq '0' ]; then
+    rayname_var="\"rayName_in\": [$input_rayid],"
+  elif [ "$input_actionfilter" ]; then
     rayname_var="\"rayName\": \"$input_rayid\",
         \"action\": \"$input_actionfilter\","
   else
