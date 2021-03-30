@@ -1,6 +1,6 @@
 # Cloudflare Zone Analytics API Script (GraphQL)
 
-This Cloudflare Zone Analytics API script, `cf-analytics-graphql.sh` uses the new Cloudflare GraphQL API as the old zone analaytics API has been deprecated and supports both traditional Cloudflare Global API Token authentication (`CF_GLOBAL_TOKEN='y'`) and newer non-global Cloudflare permission based API Token authentication (`CF_GLOBAL_TOKEN='n'`) which is currently in beta testing. The `cf-analytics-graphql.sh` script is currently default to `CF_GLOBAL_TOKEN='n'` for testing purposes.
+This Cloudflare Zone Analytics API script, `cf-analytics-graphql.sh` uses the new Cloudflare GraphQL API as the old zone analytics API has been deprecated and supports both traditional Cloudflare Global API Token authentication (`CF_GLOBAL_TOKEN='y'`) and newer non-global Cloudflare permission based API Token authentication (`CF_GLOBAL_TOKEN='n'`) which is currently in beta testing. The `cf-analytics-graphql.sh` script is currently default to `CF_GLOBAL_TOKEN='n'` for testing purposes.
 
 If you have Cloudflare Argo enabled on your CF zone, also set `CF_ARGO='y'` - currently enabled by default for testing purposes.
 
