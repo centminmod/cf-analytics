@@ -141,7 +141,7 @@ ip_analytics_hrs() {
       \"zoneTag\": \"$ZoneID\",
       \"limit\": $input_limit,
       \"filter\": {
-        \"clientIP\": \"$input_ip\",
+        $client_var
         $hostname_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
@@ -301,7 +301,7 @@ ip_analytics_days() {
       \"zoneTag\": \"$ZoneID\",
       \"limit\": $input_limit,
       \"filter\": {
-        \"clientIP\": \"$input_ip\",
+        $client_var
         $hostname_var
         \"date_gt\": \"$start_date\",
         \"date_lt\": \"$end_date\"
