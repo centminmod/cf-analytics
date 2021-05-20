@@ -87,6 +87,8 @@ ip_analytics_hrs() {
     referrer_var=
   elif [[ "$req_referrer" = 'empty' ]]; then
     referrer_var="\"clientRefererHost_like\": \"\","
+  elif [[ "$req_referrer" = 'notempty' ]]; then
+    referrer_var="\"clientRefererHost_notlike\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -261,6 +263,8 @@ ip_analytics_days() {
     referrer_var=
   elif [[ "$req_referrer" = 'empty' ]]; then
     referrer_var="\"clientRefererHost_like\": \"\","
+  elif [[ "$req_referrer" = 'notempty' ]]; then
+    referrer_var="\"clientRefererHost_notlike\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -437,6 +441,8 @@ ip_analytics() {
     referrer_var=
   elif [[ "$req_referrer" = 'empty' ]]; then
     referrer_var="\"clientRefererHost_like\": \"\","
+  elif [[ "$req_referrer" = 'notempty' ]]; then
+    referrer_var="\"clientRefererHost_notlike\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -613,6 +619,8 @@ ruleid_fw_analytics_days() {
     referrer_var=
   elif [[ "$req_referrer" = 'empty' ]]; then
     referrer_var="\"clientRefererHost_like\": \"\","
+  elif [[ "$req_referrer" = 'notempty' ]]; then
+    referrer_var="\"clientRefererHost_notlike\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -789,6 +797,8 @@ ruleid_fw_analytics() {
     referrer_var=
   elif [[ "$req_referrer" = 'empty' ]]; then
     referrer_var="\"clientRefererHost_like\": \"\","
+  elif [[ "$req_referrer" = 'notempty' ]]; then
+    referrer_var="\"clientRefererHost_notlike\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -965,6 +975,8 @@ ruleid_fw_analytics_hrs() {
     referrer_var=
   elif [[ "$req_referrer" = 'empty' ]]; then
     referrer_var="\"clientRefererHost_like\": \"\","
+  elif [[ "$req_referrer" = 'notempty' ]]; then
+    referrer_var="\"clientRefererHost_notlike\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -1139,6 +1151,8 @@ fw_analytics_days() {
     referrer_var=
   elif [[ "$req_referrer" = 'empty' ]]; then
     referrer_var="\"clientRefererHost_like\": \"\","
+  elif [[ "$req_referrer" = 'notempty' ]]; then
+    referrer_var="\"clientRefererHost_notlike\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -1315,6 +1329,8 @@ fw_analytics() {
     referrer_var=
   elif [[ "$req_referrer" = 'empty' ]]; then
     referrer_var="\"clientRefererHost_like\": \"\","
+  elif [[ "$req_referrer" = 'notempty' ]]; then
+    referrer_var="\"clientRefererHost_notlike\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -1491,6 +1507,8 @@ fw_analytics_hrs() {
     referrer_var=
   elif [[ "$req_referrer" = 'empty' ]]; then
     referrer_var="\"clientRefererHost_like\": \"\","
+  elif [[ "$req_referrer" = 'notempty' ]]; then
+    referrer_var="\"clientRefererHost_notlike\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -2410,14 +2428,14 @@ case "$1" in
     echo "---------------------------------------------"
     echo "Firewall Events filter by action + limit XX + hostname + referrer"
     echo "---------------------------------------------"
-    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
-    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
-    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
-    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
-    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
-    echo "$0 rayid-days 3 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
-    echo "$0 ip-mins 60 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
-    echo "$0 ip-hrs 72 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
-    echo "$0 ip-days 3 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
+    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
     ;;
 esac
