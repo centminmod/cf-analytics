@@ -85,6 +85,8 @@ ip_analytics_hrs() {
     referrer_var="\"clientRefererHost_in\": [$req_referrer],"
   elif [[ "$req_referrer" = 'none' ]]; then
     referrer_var=
+  elif [[ "$req_referrer" = 'empty' ]]; then
+    referrer_var="\"clientRefererHost_like\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -116,7 +118,7 @@ ip_analytics_hrs() {
           firewallEventsAdaptive(
             filter: $filter,
             limit: $limit,
-            orderBy: [datetime_ASC]
+            orderBy: [datetime_DESC]
           ) {
               action
               botScore
@@ -257,6 +259,8 @@ ip_analytics_days() {
     referrer_var="\"clientRefererHost_in\": [$req_referrer],"
   elif [[ "$req_referrer" = 'none' ]]; then
     referrer_var=
+  elif [[ "$req_referrer" = 'empty' ]]; then
+    referrer_var="\"clientRefererHost_like\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -288,7 +292,7 @@ ip_analytics_days() {
           firewallEventsAdaptiveGroups(
             limit: $limit,
             filter: $filter,
-            orderBy: [datetime_ASC]
+            orderBy: [datetime_DESC]
             ) {
             dimensions {
               action
@@ -431,6 +435,8 @@ ip_analytics() {
     referrer_var="\"clientRefererHost_in\": [$req_referrer],"
   elif [[ "$req_referrer" = 'none' ]]; then
     referrer_var=
+  elif [[ "$req_referrer" = 'empty' ]]; then
+    referrer_var="\"clientRefererHost_like\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -462,7 +468,7 @@ ip_analytics() {
           firewallEventsAdaptiveGroups(
             limit: $limit,
             filter: $filter,
-            orderBy: [datetime_ASC]
+            orderBy: [datetime_DESC]
             ) {
             dimensions {
               action
@@ -605,6 +611,8 @@ ruleid_fw_analytics_days() {
     referrer_var="\"clientRefererHost_in\": [$req_referrer],"
   elif [[ "$req_referrer" = 'none' ]]; then
     referrer_var=
+  elif [[ "$req_referrer" = 'empty' ]]; then
+    referrer_var="\"clientRefererHost_like\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -636,7 +644,7 @@ ruleid_fw_analytics_days() {
           firewallEventsAdaptiveGroups(
             limit: $limit,
             filter: $filter,
-            orderBy: [datetime_ASC]
+            orderBy: [datetime_DESC]
             ) {
             dimensions {
               action
@@ -779,6 +787,8 @@ ruleid_fw_analytics() {
     referrer_var="\"clientRefererHost_in\": [$req_referrer],"
   elif [[ "$req_referrer" = 'none' ]]; then
     referrer_var=
+  elif [[ "$req_referrer" = 'empty' ]]; then
+    referrer_var="\"clientRefererHost_like\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -810,7 +820,7 @@ ruleid_fw_analytics() {
           firewallEventsAdaptiveGroups(
             limit: $limit,
             filter: $filter,
-            orderBy: [datetime_ASC]
+            orderBy: [datetime_DESC]
             ) {
             dimensions {
               action
@@ -953,6 +963,8 @@ ruleid_fw_analytics_hrs() {
     referrer_var="\"clientRefererHost_in\": [$req_referrer],"
   elif [[ "$req_referrer" = 'none' ]]; then
     referrer_var=
+  elif [[ "$req_referrer" = 'empty' ]]; then
+    referrer_var="\"clientRefererHost_like\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -984,7 +996,7 @@ ruleid_fw_analytics_hrs() {
           firewallEventsAdaptive(
             filter: $filter,
             limit: $limit,
-            orderBy: [datetime_ASC]
+            orderBy: [datetime_DESC]
           ) {
               action
               botScore
@@ -1125,6 +1137,8 @@ fw_analytics_days() {
     referrer_var="\"clientRefererHost_in\": [$req_referrer],"
   elif [[ "$req_referrer" = 'none' ]]; then
     referrer_var=
+  elif [[ "$req_referrer" = 'empty' ]]; then
+    referrer_var="\"clientRefererHost_like\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -1156,7 +1170,7 @@ fw_analytics_days() {
           firewallEventsAdaptiveGroups(
             limit: $limit,
             filter: $filter,
-            orderBy: [datetime_ASC]
+            orderBy: [datetime_DESC]
             ) {
             dimensions {
               action
@@ -1299,6 +1313,8 @@ fw_analytics() {
     referrer_var="\"clientRefererHost_in\": [$req_referrer],"
   elif [[ "$req_referrer" = 'none' ]]; then
     referrer_var=
+  elif [[ "$req_referrer" = 'empty' ]]; then
+    referrer_var="\"clientRefererHost_like\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -1330,7 +1346,7 @@ fw_analytics() {
           firewallEventsAdaptiveGroups(
             limit: $limit,
             filter: $filter,
-            orderBy: [datetime_ASC]
+            orderBy: [datetime_DESC]
             ) {
             dimensions {
               action
@@ -1473,6 +1489,8 @@ fw_analytics_hrs() {
     referrer_var="\"clientRefererHost_in\": [$req_referrer],"
   elif [[ "$req_referrer" = 'none' ]]; then
     referrer_var=
+  elif [[ "$req_referrer" = 'empty' ]]; then
+    referrer_var="\"clientRefererHost_like\": \"\","
   else
     referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
@@ -1504,7 +1522,7 @@ fw_analytics_hrs() {
           firewallEventsAdaptive(
             filter: $filter,
             limit: $limit,
-            orderBy: [datetime_ASC]
+            orderBy: [datetime_DESC]
           ) {
               action
               botScore
@@ -2392,14 +2410,14 @@ case "$1" in
     echo "---------------------------------------------"
     echo "Firewall Events filter by action + limit XX + hostname + referrer"
     echo "---------------------------------------------"
-    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
-    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
-    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
-    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
-    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
-    echo "$0 rayid-days 3 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
-    echo "$0 ip-mins 60 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
-    echo "$0 ip-hrs 72 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
-    echo "$0 ip-days 3 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
+    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
+    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
+    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty"
     ;;
 esac
