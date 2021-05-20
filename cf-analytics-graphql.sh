@@ -53,6 +53,8 @@ else
 fi
 
 ip_analytics_hrs() {
+  req_referrer=${6:-none}
+  req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
@@ -70,10 +72,21 @@ ip_analytics_hrs() {
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
 
-  if [ "$req_hostname" ]; then
+  if [[ "$req_hostname" = 'none' ]]; then
+    hostname_var=
+  elif [ "$req_hostname" ]; then
     hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
   else
     hostname_var=
+  fi
+
+  if [[ "$req_referrer_check_multi" -eq '0' ]]; then
+    req_referrer=$(echo $req_referrer | sed 's/[^,]*/"&"/g')
+    referrer_var="\"clientRefererHost_in\": [$req_referrer],"
+  elif [[ "$req_referrer" = 'none' ]]; then
+    referrer_var=
+  else
+    referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
 
   if [ "$input_ip_check_multi" -eq '0' ]; then
@@ -143,6 +156,7 @@ ip_analytics_hrs() {
       \"filter\": {
         $client_var
         $hostname_var
+        $referrer_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -211,6 +225,8 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 ip_analytics_days() {
+  req_referrer=${6:-none}
+  req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
@@ -228,10 +244,21 @@ ip_analytics_days() {
   start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
 
-  if [ "$req_hostname" ]; then
+  if [[ "$req_hostname" = 'none' ]]; then
+    hostname_var=
+  elif [ "$req_hostname" ]; then
     hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
   else
     hostname_var=
+  fi
+
+  if [[ "$req_referrer_check_multi" -eq '0' ]]; then
+    req_referrer=$(echo $req_referrer | sed 's/[^,]*/"&"/g')
+    referrer_var="\"clientRefererHost_in\": [$req_referrer],"
+  elif [[ "$req_referrer" = 'none' ]]; then
+    referrer_var=
+  else
+    referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
 
   if [ "$input_ip_check_multi" -eq '0' ]; then
@@ -303,6 +330,7 @@ ip_analytics_days() {
       \"filter\": {
         $client_var
         $hostname_var
+        $referrer_var
         \"date_gt\": \"$start_date\",
         \"date_lt\": \"$end_date\"
       }
@@ -371,6 +399,8 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 ip_analytics() {
+  req_referrer=${6:-none}
+  req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
@@ -388,10 +418,21 @@ ip_analytics() {
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
 
-  if [ "$req_hostname" ]; then
+  if [[ "$req_hostname" = 'none' ]]; then
+    hostname_var=
+  elif [ "$req_hostname" ]; then
     hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
   else
     hostname_var=
+  fi
+
+  if [[ "$req_referrer_check_multi" -eq '0' ]]; then
+    req_referrer=$(echo $req_referrer | sed 's/[^,]*/"&"/g')
+    referrer_var="\"clientRefererHost_in\": [$req_referrer],"
+  elif [[ "$req_referrer" = 'none' ]]; then
+    referrer_var=
+  else
+    referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
 
   if [ "$input_ip_check_multi" -eq '0' ]; then
@@ -463,6 +504,7 @@ ip_analytics() {
       \"filter\": {
         $client_var
         $hostname_var
+        $referrer_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -531,6 +573,8 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 ruleid_fw_analytics_days() {
+  req_referrer=${6:-none}
+  req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
@@ -548,10 +592,21 @@ ruleid_fw_analytics_days() {
   start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
 
-  if [ "$req_hostname" ]; then
+  if [[ "$req_hostname" = 'none' ]]; then
+    hostname_var=
+  elif [ "$req_hostname" ]; then
     hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
   else
     hostname_var=
+  fi
+
+  if [[ "$req_referrer_check_multi" -eq '0' ]]; then
+    req_referrer=$(echo $req_referrer | sed 's/[^,]*/"&"/g')
+    referrer_var="\"clientRefererHost_in\": [$req_referrer],"
+  elif [[ "$req_referrer" = 'none' ]]; then
+    referrer_var=
+  else
+    referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
 
   if [ "$input_ruleid_check_multi" -eq '0' ]; then
@@ -623,6 +678,7 @@ ruleid_fw_analytics_days() {
       \"filter\": {
         $ruleid_var
         $hostname_var
+        $referrer_var
         \"date_gt\": \"$start_date\",
         \"date_lt\": \"$end_date\"
       }
@@ -691,6 +747,8 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 ruleid_fw_analytics() {
+  req_referrer=${6:-none}
+  req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
@@ -708,10 +766,21 @@ ruleid_fw_analytics() {
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
 
-  if [ "$req_hostname" ]; then
+  if [[ "$req_hostname" = 'none' ]]; then
+    hostname_var=
+  elif [ "$req_hostname" ]; then
     hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
   else
     hostname_var=
+  fi
+
+  if [[ "$req_referrer_check_multi" -eq '0' ]]; then
+    req_referrer=$(echo $req_referrer | sed 's/[^,]*/"&"/g')
+    referrer_var="\"clientRefererHost_in\": [$req_referrer],"
+  elif [[ "$req_referrer" = 'none' ]]; then
+    referrer_var=
+  else
+    referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
 
   if [ "$input_ruleid_check_multi" -eq '0' ]; then
@@ -783,6 +852,7 @@ ruleid_fw_analytics() {
       \"filter\": {
         $ruleid_var
         $hostname_var
+        $referrer_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -851,6 +921,8 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 ruleid_fw_analytics_hrs() {
+  req_referrer=${6:-none}
+  req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
@@ -868,10 +940,21 @@ ruleid_fw_analytics_hrs() {
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
 
-  if [ "$req_hostname" ]; then
+  if [[ "$req_hostname" = 'none' ]]; then
+    hostname_var=
+  elif [ "$req_hostname" ]; then
     hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
   else
     hostname_var=
+  fi
+
+  if [[ "$req_referrer_check_multi" -eq '0' ]]; then
+    req_referrer=$(echo $req_referrer | sed 's/[^,]*/"&"/g')
+    referrer_var="\"clientRefererHost_in\": [$req_referrer],"
+  elif [[ "$req_referrer" = 'none' ]]; then
+    referrer_var=
+  else
+    referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
 
   if [ "$input_ruleid_check_multi" -eq '0' ]; then
@@ -941,6 +1024,7 @@ ruleid_fw_analytics_hrs() {
       \"filter\": {
         $ruleid_var
         $hostname_var
+        $referrer_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -1009,6 +1093,8 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 fw_analytics_days() {
+  req_referrer=${6:-none}
+  req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
@@ -1026,10 +1112,21 @@ fw_analytics_days() {
   start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
 
-  if [ "$req_hostname" ]; then
+  if [[ "$req_hostname" = 'none' ]]; then
+    hostname_var=
+  elif [ "$req_hostname" ]; then
     hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
   else
     hostname_var=
+  fi
+
+  if [[ "$req_referrer_check_multi" -eq '0' ]]; then
+    req_referrer=$(echo $req_referrer | sed 's/[^,]*/"&"/g')
+    referrer_var="\"clientRefererHost_in\": [$req_referrer],"
+  elif [[ "$req_referrer" = 'none' ]]; then
+    referrer_var=
+  else
+    referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
 
   if [ "$input_rayid_check_multi" -eq '0' ]; then
@@ -1101,6 +1198,7 @@ fw_analytics_days() {
       \"filter\": {
         $rayname_var
         $hostname_var
+        $referrer_var
         \"date_gt\": \"$start_date\",
         \"date_lt\": \"$end_date\"
       }
@@ -1169,6 +1267,8 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 fw_analytics() {
+  req_referrer=${6:-none}
+  req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
@@ -1186,10 +1286,21 @@ fw_analytics() {
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
 
-  if [ "$req_hostname" ]; then
+  if [[ "$req_hostname" = 'none' ]]; then
+    hostname_var=
+  elif [ "$req_hostname" ]; then
     hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
   else
     hostname_var=
+  fi
+
+  if [[ "$req_referrer_check_multi" -eq '0' ]]; then
+    req_referrer=$(echo $req_referrer | sed 's/[^,]*/"&"/g')
+    referrer_var="\"clientRefererHost_in\": [$req_referrer],"
+  elif [[ "$req_referrer" = 'none' ]]; then
+    referrer_var=
+  else
+    referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
 
   if [ "$input_rayid_check_multi" -eq '0' ]; then
@@ -1261,6 +1372,7 @@ fw_analytics() {
       \"filter\": {
         $rayname_var
         $hostname_var
+        $referrer_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -1329,6 +1441,8 @@ cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | 
 }
 
 fw_analytics_hrs() {
+  req_referrer=${6:-none}
+  req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
   input_limit="${4:-100}"
   DATANODE='firewallEventsAdaptiveGroups'
@@ -1346,10 +1460,21 @@ fw_analytics_hrs() {
   #start_date=$(TZ=UTC date --date="@$start_epoch" +'%Y-%m-%d')
   #end_date=$(TZ=UTC date --date="@$end_epoch" +'%Y-%m-%d')
 
-  if [ "$req_hostname" ]; then
+  if [[ "$req_hostname" = 'none' ]]; then
+    hostname_var=
+  elif [ "$req_hostname" ]; then
     hostname_var="\"clientRequestHTTPHost\": \"$req_hostname\","
   else
     hostname_var=
+  fi
+
+  if [[ "$req_referrer_check_multi" -eq '0' ]]; then
+    req_referrer=$(echo $req_referrer | sed 's/[^,]*/"&"/g')
+    referrer_var="\"clientRefererHost_in\": [$req_referrer],"
+  elif [[ "$req_referrer" = 'none' ]]; then
+    referrer_var=
+  else
+    referrer_var="\"clientRefererHost\": \"$req_referrer\","
   fi
 
   if [ "$input_rayid_check_multi" -eq '0' ]; then
@@ -1419,6 +1544,7 @@ fw_analytics_hrs() {
       \"filter\": {
         $rayname_var
         $hostname_var
+        $referrer_var
         \"datetime_geq\": \"$start_date\",
         \"datetime_leq\": \"$end_date\"
       }
@@ -2176,31 +2302,31 @@ case "$1" in
     get_analytics_days "$2"
     ;;
   ruleid-mins )
-    ruleid_fw_analytics_hrs "$2" "$3" "$4" "$5" "$6"
+    ruleid_fw_analytics_hrs "$2" "$3" "$4" "$5" "$6" "$7"
     ;;
   ruleid-hrs )
-    ruleid_fw_analytics "$2" "$3" "$4" "$5" "$6"
+    ruleid_fw_analytics "$2" "$3" "$4" "$5" "$6" "$7"
     ;;
   ruleid-days )
-    ruleid_fw_analytics_days "$2" "$3" "$4" "$5" "$6"
+    ruleid_fw_analytics_days "$2" "$3" "$4" "$5" "$6" "$7"
     ;;
   rayid-mins )
-    fw_analytics_hrs "$2" "$3" "$4" "$5" "$6"
+    fw_analytics_hrs "$2" "$3" "$4" "$5" "$6" "$7"
     ;;
   rayid-hrs )
-    fw_analytics "$2" "$3" "$4" "$5" "$6"
+    fw_analytics "$2" "$3" "$4" "$5" "$6" "$7"
     ;;
   rayid-days )
-    fw_analytics_days "$2" "$3" "$4" "$5" "$6"
+    fw_analytics_days "$2" "$3" "$4" "$5" "$6" "$7"
     ;;
   ip-mins )
-    ip_analytics_hrs "$2" "$3" "$4" "$5" "$6"
+    ip_analytics_hrs "$2" "$3" "$4" "$5" "$6" "$7"
     ;;
   ip-hrs )
-    ip_analytics "$2" "$3" "$4" "$5" "$6"
+    ip_analytics "$2" "$3" "$4" "$5" "$6" "$7"
     ;;
   ip-days )
-    ip_analytics_days "$2" "$3" "$4" "$5" "$6"
+    ip_analytics_days "$2" "$3" "$4" "$5" "$6" "$7"
     ;;
   * )
     echo "Usage:"
@@ -2262,5 +2388,18 @@ case "$1" in
     echo "$0 ip-mins 60 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
     echo "$0 ip-hrs 72 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
     echo "$0 ip-days 3 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
+    echo
+    echo "---------------------------------------------"
+    echo "Firewall Events filter by action + limit XX + hostname + referrer"
+    echo "---------------------------------------------"
+    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
+    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
+    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none"
     ;;
 esac
