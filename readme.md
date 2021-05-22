@@ -1,6 +1,6 @@
 # Cloudflare Zone Analytics API Script (GraphQL)
 
-This Cloudflare Zone Analytics API script, `cf-analytics-graphql.sh` uses the new Cloudflare GraphQL API as the old zone analytics API has been deprecated and supports both traditional Cloudflare Global API Token authentication (`CF_GLOBAL_TOKEN='y'`) and newer non-global Cloudflare permission based API Token authentication (`CF_GLOBAL_TOKEN='n'`) which is currently in beta testing. The `cf-analytics-graphql.sh` script is currently default to `CF_GLOBAL_TOKEN='n'` for testing purposes.
+This Cloudflare Zone Analytics API script, `cf-analytics-graphql.sh` uses the new Cloudflare GraphQL API as the old zone analytics API has been deprecated and supports both traditional Cloudflare Global API Token authentication (`CF_GLOBAL_TOKEN='y'`) and newer non-global Cloudflare permission based API Token authentication (`CF_GLOBAL_TOKEN='n'`) which is currently in beta testing. The `cf-analytics-graphql.sh` script is currently default to `CF_GLOBAL_TOKEN='n'` for Cloudflare API Token based authentication.
 
 If you have Cloudflare Argo enabled on your CF zone, also set `CF_ARGO='y'` - currently enabled by default for testing purposes.
 
@@ -10,12 +10,31 @@ By default the `cf-analytics-graphql.sh` script sets `CF_GLOBAL_TOKEN='n'` to us
 
 ## Usage
 
-Where `YOUR_CLOUDFLARE_API_KEY` can either be your Cloudflare Global API Token or your generated Cloudflare API Token.
+Populate your SSH session variables Where `YOUR_CLOUDFLARE_API_KEY` can either be your Cloudflare Global API Token or your generated Cloudflare API Token.
 
 ```
 export zid=YOUR_CLOUDFLARE_DOMAIN_ZONE_ID
 export cfkey=YOUR_CLOUDFLARE_API_KEY
 export cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
+```
+
+Or create a settings file `cf-analytics-graphql.ini` in same directory as `cf-analytics-graphql.sh` and populate your Cloudflare related variables within `cf-analytics-graphql.ini` with the following. Then you'll be able to run `cf-analytics-graphql.sh`.
+
+```
+zid=YOUR_CLOUDFLARE_DOMAIN_ZONE_ID
+cfkey=YOUR_CLOUDFLARE_API_KEY
+cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
+```
+
+You can populate the settings file `cf-analytics-graphql.ini` with other overriding variables too:
+
+Switch from default Cloudflare API Token authentication to using Cloudflare Global API Key and Cloudflare Account Email
+
+```
+CF_GLOBAL_TOKEN='y'
+zid=YOUR_CLOUDFLARE_DOMAIN_ZONE_ID
+cfkey=YOUR_CLOUDFLARE_GLOBAL_API_KEY
+cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
 ```
 
 Supported options include querying the Cloudflare Firewall GraphQL API filtering by ruleId, rayID and client visitor IP address.

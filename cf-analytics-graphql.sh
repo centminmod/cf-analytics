@@ -21,6 +21,12 @@ CF_ZONEINFO='cf-zoneinfo.log'
 ENDPOINT='https://api.cloudflare.com/client/v4/graphql'
 DATANODE='httpRequests1hGroups'
 BROWSER_PV='n'
+################################################
+SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
+################################################
+if [ -f "${SCRIPT_DIR}/cf-analytics-graphql.ini" ]; then
+  source "${SCRIPT_DIR}/cf-analytics-graphql.ini"
+fi
 
 if [[ -f $(which yum) && ! -f /usr/bin/datamash ]]; then
   yum -y -q install datamash
