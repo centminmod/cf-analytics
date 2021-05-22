@@ -32,6 +32,10 @@ if [[ -f $(which yum) && ! -f /usr/bin/datamash ]]; then
   yum -y -q install datamash
 fi
 
+if [[ -f $(which yum) && ! -f /usr/bin/jq ]]; then
+  yum -y -q install jq
+fi
+
 if [[ "$CF_GLOBAL_TOKEN" = [yY] ]]; then
   curl -4sX GET -H "X-Auth-Email: $cfemail" -H "X-Auth-Key: $cfkey" -H "Content-Type: application/json" "https://api.cloudflare.com/client/v4/zones/$zid" > "$CF_ZONEINFO"
   cat "$CF_ZONEINFO" | jq -r ' .errors[]' >/dev/null 2>&1
