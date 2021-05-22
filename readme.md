@@ -12,11 +12,15 @@ By default the `cf-analytics-graphql.sh` script sets `CF_GLOBAL_TOKEN='n'` to us
 
 Populate your SSH session variables Where `YOUR_CLOUDFLARE_API_KEY` can either be your Cloudflare Global API Token or your generated Cloudflare API Token.
 
+### Sessions variables
+
 ```
 export zid=YOUR_CLOUDFLARE_DOMAIN_ZONE_ID
 export cfkey=YOUR_CLOUDFLARE_API_KEY
 export cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
 ```
+
+### Settings file
 
 Or create a settings file `cf-analytics-graphql.ini` in same directory as `cf-analytics-graphql.sh` and populate your Cloudflare related variables within `cf-analytics-graphql.ini` with the following. Then you'll be able to run `cf-analytics-graphql.sh`.
 
