@@ -10,9 +10,9 @@
 # whether to use CF Global Account API Token or
 # new CF specific API Tokens (in beta right now)
 DEBUG='y'
-CF_ENTERPRISE='y'
+CF_ENTERPRISE='n'
 CF_GLOBAL_TOKEN='n'
-CF_ARGO='y'
+CF_ARGO='n'
 CF_LOG='cm-analytics-graphql.log'
 CF_LOGARGO='cm-analytics-graphql-argo.log'
 CF_LOGARGOGEO='cm-analytics-graphql-argo-geo.log'

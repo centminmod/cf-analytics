@@ -32,6 +32,24 @@ cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
 
 You can populate the settings file `cf-analytics-graphql.ini` with other overriding variables too:
 
+If you have Cloudflare Argo enabled, you may want to also get Argo analytic stats
+
+```
+CF_ARGO='y'
+zid=YOUR_CLOUDFLARE_DOMAIN_ZONE_ID
+cfkey=YOUR_CLOUDFLARE_API_KEY
+cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
+```
+
+If you on Cloudflare Enterprise plan and enabled Enterprise Bot Management, you can enable additional stats for Bot Management score (`botScore`) and bot sore (`botScoreSrcName`) etc:
+
+```
+CF_ENTERPRISE='y'
+zid=YOUR_CLOUDFLARE_DOMAIN_ZONE_ID
+cfkey=YOUR_CLOUDFLARE_API_KEY
+cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
+```
+
 Switch from default Cloudflare API Token authentication to using Cloudflare Global API Key and Cloudflare Account Email
 
 ```
@@ -106,7 +124,6 @@ Firewall Events filter by action + limit XX + hostname
 ./cf-analytics-graphql.sh ip-mins 60 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname
 ./cf-analytics-graphql.sh ip-hrs 72 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname
 ./cf-analytics-graphql.sh ip-days 3 request-ip {block|log|challenge|managed_block|managed_challenge|jschallenge|allow} 100 hostname
-
 
 ---------------------------------------------
 Firewall Events filter by action + limit XX + hostname + referrer
