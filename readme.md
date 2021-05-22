@@ -50,6 +50,16 @@ cfkey=YOUR_CLOUDFLARE_API_KEY
 cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
 ```
 
+If you have Cloudflare Argo + Enterprise Botmanagement enabled:
+
+```
+CF_ARGO='y'
+CF_ENTERPRISE='y'
+zid=YOUR_CLOUDFLARE_DOMAIN_ZONE_ID
+cfkey=YOUR_CLOUDFLARE_API_KEY
+cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
+```
+
 Switch from default Cloudflare API Token authentication to using Cloudflare Global API Key and Cloudflare Account Email
 
 ```
