@@ -92,9 +92,9 @@ Firewall Events
 ./cf-analytics-graphql.sh rayid-mins 60 cfrayid
 ./cf-analytics-graphql.sh rayid-hrs 72 cfrayid
 ./cf-analytics-graphql.sh rayid-days 3 cfrayid
-./cf-analytics-graphql.sh ip-mins 60 request-ip
-./cf-analytics-graphql.sh ip-hrs 72 request-ip
-./cf-analytics-graphql.sh ip-days 3 request-ip
+./cf-analytics-graphql.sh ip-mins 60 request-ip|all
+./cf-analytics-graphql.sh ip-hrs 72 request-ip|all
+./cf-analytics-graphql.sh ip-days 3 request-ip|all
 
 ---------------------------------------------
 Firewall Events filter by action
@@ -105,9 +105,9 @@ Firewall Events filter by action
 ./cf-analytics-graphql.sh rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}
 ./cf-analytics-graphql.sh rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}
 ./cf-analytics-graphql.sh rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}
-./cf-analytics-graphql.sh ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}
-./cf-analytics-graphql.sh ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}
-./cf-analytics-graphql.sh ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}
+./cf-analytics-graphql.sh ip-mins 60 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}
+./cf-analytics-graphql.sh ip-hrs 72 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}
+./cf-analytics-graphql.sh ip-days 3 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}
 
 ---------------------------------------------
 Firewall Events filter by action + limit XX
@@ -118,9 +118,9 @@ Firewall Events filter by action + limit XX
 ./cf-analytics-graphql.sh rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100
 ./cf-analytics-graphql.sh rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100
 ./cf-analytics-graphql.sh rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100
-./cf-analytics-graphql.sh ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100
-./cf-analytics-graphql.sh ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100
-./cf-analytics-graphql.sh ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100
+./cf-analytics-graphql.sh ip-mins 60 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100
+./cf-analytics-graphql.sh ip-hrs 72 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100
+./cf-analytics-graphql.sh ip-days 3 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100
 
 ---------------------------------------------
 Firewall Events filter by action + limit XX + hostname
@@ -131,9 +131,9 @@ Firewall Events filter by action + limit XX + hostname
 ./cf-analytics-graphql.sh rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname
 ./cf-analytics-graphql.sh rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname
 ./cf-analytics-graphql.sh rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname
-./cf-analytics-graphql.sh ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname
-./cf-analytics-graphql.sh ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname
-./cf-analytics-graphql.sh ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname
+./cf-analytics-graphql.sh ip-mins 60 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname
+./cf-analytics-graphql.sh ip-hrs 72 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname
+./cf-analytics-graphql.sh ip-days 3 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname
 
 ---------------------------------------------
 Firewall Events filter by action + limit XX + hostname + referrer
@@ -144,9 +144,9 @@ Firewall Events filter by action + limit XX + hostname + referrer
 ./cf-analytics-graphql.sh rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty
 ./cf-analytics-graphql.sh rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty
 ./cf-analytics-graphql.sh rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty
-./cf-analytics-graphql.sh ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty
-./cf-analytics-graphql.sh ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty
-./cf-analytics-graphql.sh ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty
+./cf-analytics-graphql.sh ip-mins 60 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty
+./cf-analytics-graphql.sh ip-hrs 72 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty
+./cf-analytics-graphql.sh ip-days 3 request-ip|all {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty
 ```
 
 ## Example Web Analytics For Past 72hrs
