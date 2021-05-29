@@ -21,8 +21,8 @@ CF_ZONEINFO='cf-zoneinfo.log'
 ENDPOINT='https://api.cloudflare.com/client/v4/graphql'
 DATANODE='httpRequests1hGroups'
 BROWSER_PV='n'
-JSON_OUTPUT_SAVE='n'
-JSON_TO_CSV='n'
+JSON_OUTPUT_SAVE='y'
+JSON_TO_CSV='y'
 JSON_OUTPUT_DIR='/home/cf-graphql-json-output'
 ################################################
 SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
@@ -1965,14 +1965,6 @@ get_analytics() {
 
 if [[ "$CF_ENTERPRISE" != [yY] ]]; then
   PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
-fi
-
-if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
-  echo "JSON log saved: $JSON_OUTPUT_FILE"
-  if [[ "$JSON_TO_CSV" = [yY] ]]; then
-    echo "CSV converted log saved: $JSON_CSV_OUTPUT_FILE"
-  fi
-  echo
 fi
 
 if [[ "$DEBUG" = [yY] ]]; then
