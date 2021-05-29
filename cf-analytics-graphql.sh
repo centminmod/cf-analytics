@@ -21,11 +21,17 @@ CF_ZONEINFO='cf-zoneinfo.log'
 ENDPOINT='https://api.cloudflare.com/client/v4/graphql'
 DATANODE='httpRequests1hGroups'
 BROWSER_PV='n'
+JSON_OUTPUT_SAVE='n'
+JSON_OUTPUT_DIR='/home/cf-graphql-json-output'
 ################################################
 SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
 ################################################
 if [ -f "${SCRIPT_DIR}/cf-analytics-graphql.ini" ]; then
   source "${SCRIPT_DIR}/cf-analytics-graphql.ini"
+fi
+
+if [[ "$JSON_OUTPUT_SAVE" = [yY] && ! -d "$JSON_OUTPUT_DIR" ]]; then
+  mkdir -p "$JSON_OUTPUT_DIR"
 fi
 
 if [[ -f $(which yum) && ! -f /usr/bin/datamash ]]; then
@@ -63,6 +69,7 @@ else
 fi
 
 ip_analytics_hrs() {
+  JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-iphrs.json"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -112,9 +119,11 @@ ip_analytics_hrs() {
         \"action\": \"$input_actionfilter\","
   elif [ "$input_ip_check_multi" -eq '0' ]; then
     client_var="\"clientIP_in\": [$input_ip],"
-  elif [ "$input_actionfilter" ]; then
+  elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     client_var="\"clientIP\": \"$input_ip\",
         \"action\": \"$input_actionfilter\","
+  elif [ "$input_actionfilter" = 'none' ]; then
+    client_var="\"clientIP\": \"$input_ip\","
   else
     client_var="\"clientIP\": \"$input_ip\","
   fi
@@ -179,6 +188,11 @@ ip_analytics_hrs() {
 
 if [[ "$CF_ENTERPRISE" != [yY] ]]; then
   PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
+
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  echo "JSON log saved: $JSON_OUTPUT_FILE"
+  echo
 fi
 
 if [[ "$DEBUG" = [yY] ]]; then
@@ -234,11 +248,16 @@ echo "------------------------------------------------------------------"
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
 # listing json
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+else
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+fi
 
 }
 
 ip_analytics_days() {
+  JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ipdays.json"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -288,9 +307,11 @@ ip_analytics_days() {
         \"action\": \"$input_actionfilter\","
   elif [ "$input_ip_check_multi" -eq '0' ]; then
     client_var="\"clientIP_in\": [$input_ip],"
-  elif [ "$input_actionfilter" ]; then
+  elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     client_var="\"clientIP\": \"$input_ip\",
         \"action\": \"$input_actionfilter\","
+  elif [ "$input_actionfilter" = 'none' ]; then
+    client_var="\"clientIP\": \"$input_ip\","
   else
     client_var="\"clientIP\": \"$input_ip\","
   fi
@@ -359,6 +380,11 @@ if [[ "$CF_ENTERPRISE" != [yY] ]]; then
   PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
 fi
 
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  echo "JSON log saved: $JSON_OUTPUT_FILE"
+  echo
+fi
+
 if [[ "$DEBUG" = [yY] ]]; then
   echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
@@ -412,11 +438,16 @@ echo "------------------------------------------------------------------"
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
 # listing json
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+else
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+fi
 
 }
 
 ip_analytics() {
+  JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ip.json"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -466,9 +497,11 @@ ip_analytics() {
         \"action\": \"$input_actionfilter\","
   elif [ "$input_ip_check_multi" -eq '0' ]; then
     client_var="\"clientIP_in\": [$input_ip],"
-  elif [ "$input_actionfilter" ]; then
+  elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     client_var="\"clientIP\": \"$input_ip\",
         \"action\": \"$input_actionfilter\","
+  elif [ "$input_actionfilter" = 'none' ]; then
+    client_var="\"clientIP\": \"$input_ip\","
   else
     client_var="\"clientIP\": \"$input_ip\","
   fi
@@ -537,6 +570,11 @@ if [[ "$CF_ENTERPRISE" != [yY] ]]; then
   PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
 fi
 
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  echo "JSON log saved: $JSON_OUTPUT_FILE"
+  echo
+fi
+
 if [[ "$DEBUG" = [yY] ]]; then
   echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
@@ -590,11 +628,16 @@ echo "------------------------------------------------------------------"
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
 # listing json
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+else
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+fi
 
 }
 
 ruleid_fw_analytics_days() {
+  JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ruleid-days.json"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -644,9 +687,11 @@ ruleid_fw_analytics_days() {
         \"action\": \"$input_actionfilter\","
   elif [ "$input_ruleid_check_multi" -eq '0' ]; then
     ruleid_var="\"ruleId_in\": [$input_ruleid],"
-  elif [ "$input_actionfilter" ]; then
+  elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     ruleid_var="\"ruleId\": \"$input_ruleid\",
         \"action\": \"$input_actionfilter\","
+  elif [ "$input_actionfilter" = 'none' ]; then
+    ruleid_var="\"ruleId\": \"$input_ruleid\","
   else
     ruleid_var="\"ruleId\": \"$input_ruleid\","
   fi
@@ -715,6 +760,11 @@ if [[ "$CF_ENTERPRISE" != [yY] ]]; then
   PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
 fi
 
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  echo "JSON log saved: $JSON_OUTPUT_FILE"
+  echo
+fi
+
 if [[ "$DEBUG" = [yY] ]]; then
   echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
@@ -768,11 +818,16 @@ echo "------------------------------------------------------------------"
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
 # listing json
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+else
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+fi
 
 }
 
 ruleid_fw_analytics() {
+  JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ruleid.json"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -822,9 +877,11 @@ ruleid_fw_analytics() {
         \"action\": \"$input_actionfilter\","
   elif [ "$input_ruleid_check_multi" -eq '0' ]; then
     ruleid_var="\"ruleId_in\": [$input_ruleid],"
-  elif [ "$input_actionfilter" ]; then
+  elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     ruleid_var="\"ruleId\": \"$input_ruleid\",
         \"action\": \"$input_actionfilter\","
+  elif [ "$input_actionfilter" = 'none' ]; then
+    ruleid_var="\"ruleId\": \"$input_ruleid\","
   else
     ruleid_var="\"ruleId\": \"$input_ruleid\","
   fi
@@ -893,6 +950,11 @@ if [[ "$CF_ENTERPRISE" != [yY] ]]; then
   PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
 fi
 
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  echo "JSON log saved: $JSON_OUTPUT_FILE"
+  echo
+fi
+
 if [[ "$DEBUG" = [yY] ]]; then
   echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
@@ -946,11 +1008,16 @@ echo "------------------------------------------------------------------"
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
 # listing json
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+else
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+fi
 
 }
 
 ruleid_fw_analytics_hrs() {
+  JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ruleid-hrs.json"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -1000,9 +1067,11 @@ ruleid_fw_analytics_hrs() {
         \"action\": \"$input_actionfilter\","
   elif [ "$input_ruleid_check_multi" -eq '0' ]; then
     ruleid_var="\"ruleId_in\": [$input_ruleid],"
-  elif [ "$input_actionfilter" ]; then
+  elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     ruleid_var="\"ruleId\": \"$input_ruleid\",
         \"action\": \"$input_actionfilter\","
+  elif [ "$input_actionfilter" = 'none' ]; then
+    ruleid_var="\"ruleId\": \"$input_ruleid\","
   else
     ruleid_var="\"ruleId\": \"$input_ruleid\","
   fi
@@ -1069,6 +1138,11 @@ if [[ "$CF_ENTERPRISE" != [yY] ]]; then
   PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
 fi
 
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  echo "JSON log saved: $JSON_OUTPUT_FILE"
+  echo
+fi
+
 if [[ "$DEBUG" = [yY] ]]; then
   echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
@@ -1122,11 +1196,16 @@ echo "------------------------------------------------------------------"
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
 # listing json
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+else
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+fi
 
 }
 
 fw_analytics_days() {
+  JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-firewall-day.json"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -1176,9 +1255,11 @@ fw_analytics_days() {
         \"action\": \"$input_actionfilter\","
   elif [ "$input_rayid_check_multi" -eq '0' ]; then
     rayname_var="\"rayName_in\": [$input_rayid],"
-  elif [ "$input_actionfilter" ]; then
+  elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     rayname_var="\"rayName\": \"$input_rayid\",
         \"action\": \"$input_actionfilter\","
+  elif [ "$input_actionfilter" = 'none' ]; then
+    rayname_var="\"rayName\": \"$input_rayid\","
   else
     rayname_var="\"rayName\": \"$input_rayid\","
   fi
@@ -1247,6 +1328,11 @@ if [[ "$CF_ENTERPRISE" != [yY] ]]; then
   PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
 fi
 
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  echo "JSON log saved: $JSON_OUTPUT_FILE"
+  echo
+fi
+
 if [[ "$DEBUG" = [yY] ]]; then
   echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
@@ -1300,11 +1386,16 @@ echo "------------------------------------------------------------------"
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
 # listing json
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+else
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+fi
 
 }
 
 fw_analytics() {
+  JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-firewall.json"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -1354,9 +1445,11 @@ fw_analytics() {
         \"action\": \"$input_actionfilter\","
   elif [ "$input_rayid_check_multi" -eq '0' ]; then
     rayname_var="\"rayName_in\": [$input_rayid],"
-  elif [ "$input_actionfilter" ]; then
+  elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     rayname_var="\"rayName\": \"$input_rayid\",
         \"action\": \"$input_actionfilter\","
+  elif [ "$input_actionfilter" = 'none' ]; then
+    rayname_var="\"rayName\": \"$input_rayid\","
   else
     rayname_var="\"rayName\": \"$input_rayid\","
   fi
@@ -1425,6 +1518,11 @@ if [[ "$CF_ENTERPRISE" != [yY] ]]; then
   PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
 fi
 
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  echo "JSON log saved: $JSON_OUTPUT_FILE"
+  echo
+fi
+
 if [[ "$DEBUG" = [yY] ]]; then
   echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
@@ -1478,11 +1576,16 @@ echo "------------------------------------------------------------------"
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
 # listing json
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+else
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+fi
 
 }
 
 fw_analytics_hrs() {
+  JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-firewall-hrs.json"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -1532,9 +1635,11 @@ fw_analytics_hrs() {
         \"action\": \"$input_actionfilter\","
   elif [ "$input_rayid_check_multi" -eq '0' ]; then
     rayname_var="\"rayName_in\": [$input_rayid],"
-  elif [ "$input_actionfilter" ]; then
+  elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     rayname_var="\"rayName\": \"$input_rayid\",
         \"action\": \"$input_actionfilter\","
+  elif [ "$input_actionfilter" = 'none' ]; then
+    rayname_var="\"rayName\": \"$input_rayid\","
   else
     rayname_var="\"rayName\": \"$input_rayid\","
   fi
@@ -1602,7 +1707,7 @@ if [[ "$CF_ENTERPRISE" != [yY] ]]; then
 fi
 
 if [[ "$DEBUG" = [yY] ]]; then
-  echo
+  # echo
   echo "$PAYLOAD" | sed -e "s|$ZoneID|zoneid|"
   echo
 fi
@@ -1654,7 +1759,11 @@ echo "------------------------------------------------------------------"
 cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -r '"\(.clientIP) \(.rayName) \(.edgeResponseStatus) \(.botScore)x\(.botScoreSrcName) \(.action) \(.clientAsn) \(.clientASNDescription) \(.clientCountryName) \(.edgeColoName) \(.datetime) \(.clientRequestHTTPHost) \(.clientRequestHTTPMethodName) \(.clientRequestHTTPProtocol) \(.clientRequestPath) \(.clientRequestQuery)"'
 echo "------------------------------------------------------------------"
 # listing json
-cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+else
+  cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
+fi
 
 }
 
@@ -1749,6 +1858,11 @@ get_analytics() {
 
 if [[ "$CF_ENTERPRISE" != [yY] ]]; then
   PAYLOAD=$(echo "$PAYLOAD" | sed -e 's|botScoreSrcName||' -e 's|botScore||')
+fi
+
+if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
+  echo "JSON log saved: $JSON_OUTPUT_FILE"
+  echo
 fi
 
 if [[ "$DEBUG" = [yY] ]]; then
@@ -2399,53 +2513,53 @@ case "$1" in
     echo "---------------------------------------------"
     echo "Firewall Events filter by action"
     echo "---------------------------------------------"
-    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}"
-    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}"
-    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}"
-    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}"
-    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}"
-    echo "$0 rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}"
-    echo "$0 ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}"
-    echo "$0 ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}"
-    echo "$0 ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow}"
+    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none}"
+    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none}"
+    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none}"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none}"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none}"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none}"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none}"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none}"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none}"
     echo
     echo "---------------------------------------------"
     echo "Firewall Events filter by action + limit XX"
     echo "---------------------------------------------"
-    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100"
-    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100"
-    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100"
-    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100"
-    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100"
-    echo "$0 rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100"
-    echo "$0 ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100"
-    echo "$0 ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100"
-    echo "$0 ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100"
+    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100"
+    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100"
+    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100"
     echo
     echo "---------------------------------------------"
     echo "Firewall Events filter by action + limit XX + hostname"
     echo "---------------------------------------------"
-    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
-    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
-    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
-    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
-    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
-    echo "$0 rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
-    echo "$0 ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
-    echo "$0 ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
-    echo "$0 ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname"
+    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname"
+    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname"
+    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname"
     echo
     echo "---------------------------------------------"
     echo "Firewall Events filter by action + limit XX + hostname + referrer"
     echo "---------------------------------------------"
-    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
-    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
-    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
-    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
-    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
-    echo "$0 rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
-    echo "$0 ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
-    echo "$0 ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
-    echo "$0 ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 ruleid-mins 60 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 ruleid-hrs 72 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 ruleid-days 3 cfruleid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 rayid-mins 60 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 rayid-hrs 72 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 rayid-days 3 cfrayid {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 ip-mins 60 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 ip-hrs 72 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname|none referrer|none|empty|notempty"
+    echo "$0 ip-days 3 request-ip {block|log|challenge|challenge_solved|managed_block|managed_challenge|jschallenge|allow|none} 100 hostname|none referrer|none|empty|notempty"
     ;;
 esac
