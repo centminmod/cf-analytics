@@ -84,7 +84,7 @@ ip_analytics_hrs() {
   since=$1
   input_ip=$2
   input_ip_check_multi=$(echo "$input_ip" | grep -q ','; echo $?)
-  input_actionfilter=$3
+  input_actionfilter=${3:-none}
   back_seconds=$((60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
@@ -285,7 +285,7 @@ ip_analytics_days() {
   since=$1
   input_ip=$2
   input_ip_check_multi=$(echo "$input_ip" | grep -q ','; echo $?)
-  input_actionfilter=$3
+  input_actionfilter=${3:-none}
   back_seconds=$((86400 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
@@ -488,7 +488,7 @@ ip_analytics() {
   since=$1
   input_ip=$2
   input_ip_check_multi=$(echo "$input_ip" | grep -q ','; echo $?)
-  input_actionfilter=$3
+  input_actionfilter=${3:-none}
   back_seconds=$((60 * 60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
