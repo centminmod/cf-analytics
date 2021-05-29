@@ -69,6 +69,40 @@ cfkey=YOUR_CLOUDFLARE_GLOBAL_API_KEY
 cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
 ```
 
+Save JSON log output
+
+```
+JSON_OUTPUT_SAVE='y'
+CF_GLOBAL_TOKEN='y'
+zid=YOUR_CLOUDFLARE_DOMAIN_ZONE_ID
+cfkey=YOUR_CLOUDFLARE_GLOBAL_API_KEY
+cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
+```
+
+The output would show something like:
+
+```
+JSON log saved: /home/cf-graphql-json-output/cf-graphql-ip.json
+```
+
+Save JSON log output and JSON to CSV converted log output
+
+```
+JSON_TO_CSV='y'
+JSON_OUTPUT_SAVE='y'
+CF_GLOBAL_TOKEN='y'
+zid=YOUR_CLOUDFLARE_DOMAIN_ZONE_ID
+cfkey=YOUR_CLOUDFLARE_GLOBAL_API_KEY
+cfemail=YOUR_CLOUDFLARE_ACCOUNT_EMAIL
+```
+
+The output would show something like:
+
+```
+JSON log saved: /home/cf-graphql-json-output/cf-graphql-ip.json
+CSV converted log saved: /home/cf-graphql-json-output/cf-graphql-ip.csv
+```
+
 Supported options include querying the Cloudflare Firewall GraphQL API filtering by ruleId, rayID and client visitor IP address.
 
 ```
