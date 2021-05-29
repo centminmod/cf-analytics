@@ -122,8 +122,10 @@ ip_analytics_hrs() {
   elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     client_var="\"clientIP\": \"$input_ip\",
         \"action\": \"$input_actionfilter\","
-  elif [ "$input_actionfilter" = 'none' ]; then
-    client_var="\"clientIP\": \"$input_ip\","
+  elif [[ "$input_ip" = 'all' && "$input_actionfilter" = 'none' ]]; then
+    client_var=
+  elif [[ "$input_ip" = 'all' && "$input_actionfilter" != 'none' ]]; then
+    client_var="\"action\": \"$input_actionfilter\","
   else
     client_var="\"clientIP\": \"$input_ip\","
   fi
@@ -310,8 +312,10 @@ ip_analytics_days() {
   elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     client_var="\"clientIP\": \"$input_ip\",
         \"action\": \"$input_actionfilter\","
-  elif [ "$input_actionfilter" = 'none' ]; then
-    client_var="\"clientIP\": \"$input_ip\","
+  elif [[ "$input_ip" = 'all' && "$input_actionfilter" = 'none' ]]; then
+    client_var=
+  elif [[ "$input_ip" = 'all' && "$input_actionfilter" != 'none' ]]; then
+    client_var="\"action\": \"$input_actionfilter\","
   else
     client_var="\"clientIP\": \"$input_ip\","
   fi
@@ -500,8 +504,10 @@ ip_analytics() {
   elif [[ "$input_actionfilter" && "$input_actionfilter" != 'none' ]]; then
     client_var="\"clientIP\": \"$input_ip\",
         \"action\": \"$input_actionfilter\","
-  elif [ "$input_actionfilter" = 'none' ]; then
-    client_var="\"clientIP\": \"$input_ip\","
+  elif [[ "$input_ip" = 'all' && "$input_actionfilter" = 'none' ]]; then
+    client_var=
+  elif [[ "$input_ip" = 'all' && "$input_actionfilter" != 'none' ]]; then
+    client_var="\"action\": \"$input_actionfilter\","
   else
     client_var="\"clientIP\": \"$input_ip\","
   fi
