@@ -22,12 +22,17 @@ ENDPOINT='https://api.cloudflare.com/client/v4/graphql'
 DATANODE='httpRequests1hGroups'
 BROWSER_PV='n'
 JSON_OUTPUT_SAVE='n'
+JSON_TO_CSV='n'
 JSON_OUTPUT_DIR='/home/cf-graphql-json-output'
 ################################################
 SCRIPT_DIR=$(readlink -f $(dirname ${BASH_SOURCE[0]}))
 ################################################
 if [ -f "${SCRIPT_DIR}/cf-analytics-graphql.ini" ]; then
   source "${SCRIPT_DIR}/cf-analytics-graphql.ini"
+fi
+
+if [[ "$JSON_TO_CSV" = [yY] ]]; then
+  JSON_OUTPUT_SAVE='y'
 fi
 
 if [[ "$JSON_OUTPUT_SAVE" = [yY] && ! -d "$JSON_OUTPUT_DIR" ]]; then
@@ -70,6 +75,7 @@ fi
 
 ip_analytics_hrs() {
   JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-iphrs.json"
+  JSON_CSV_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-iphrs.csv"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -194,6 +200,9 @@ fi
 
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   echo "JSON log saved: $JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    echo "CSV converted log saved: $JSON_CSV_OUTPUT_FILE"
+  fi
   echo
 fi
 
@@ -252,6 +261,13 @@ echo "------------------------------------------------------------------"
 # listing json
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    # csv conversion
+    # headers
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[0] | keys | @csv' | tr -d '"' > "$JSON_CSV_OUTPUT_FILE"
+    # data
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[] | [ .action,.botScore,.botScoreSrcName,.clientASNDescription,.clientAsn,.clientCountryName,.clientIP,.clientRefererHost,.clientRefererPath,.clientRefererQuery,.clientRefererScheme,.clientRequestHTTPHost,.clientRequestHTTPMethodName,.clientRequestHTTPProtocol,.clientRequestPath,.clientRequestQuery,.clientRequestScheme,.datetime,.edgeColoName,.edgeResponseStatus,.kind,.originResponseStatus,.rayName,.ruleId,.source,.userAgent ] | @csv' >> "$JSON_CSV_OUTPUT_FILE"
+  fi
 else
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 fi
@@ -260,6 +276,7 @@ fi
 
 ip_analytics_days() {
   JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ipdays.json"
+  JSON_CSV_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ipdays.csv"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -386,6 +403,9 @@ fi
 
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   echo "JSON log saved: $JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    echo "CSV converted log saved: $JSON_CSV_OUTPUT_FILE"
+  fi
   echo
 fi
 
@@ -444,6 +464,13 @@ echo "------------------------------------------------------------------"
 # listing json
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    # csv conversion
+    # headers
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[0] | keys | @csv' | tr -d '"' > "$JSON_CSV_OUTPUT_FILE"
+    # data
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[] | [ .action,.botScore,.botScoreSrcName,.clientASNDescription,.clientAsn,.clientCountryName,.clientIP,.clientRefererHost,.clientRefererPath,.clientRefererQuery,.clientRefererScheme,.clientRequestHTTPHost,.clientRequestHTTPMethodName,.clientRequestHTTPProtocol,.clientRequestPath,.clientRequestQuery,.clientRequestScheme,.datetime,.edgeColoName,.edgeResponseStatus,.kind,.originResponseStatus,.rayName,.ruleId,.source,.userAgent ] | @csv' >> "$JSON_CSV_OUTPUT_FILE"
+  fi
 else
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 fi
@@ -452,6 +479,7 @@ fi
 
 ip_analytics() {
   JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ip.json"
+  JSON_CSV_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ip.csv"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -578,6 +606,9 @@ fi
 
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   echo "JSON log saved: $JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    echo "CSV converted log saved: $JSON_CSV_OUTPUT_FILE"
+  fi
   echo
 fi
 
@@ -636,6 +667,13 @@ echo "------------------------------------------------------------------"
 # listing json
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    # csv conversion
+    # headers
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[0] | keys | @csv' | tr -d '"' > "$JSON_CSV_OUTPUT_FILE"
+    # data
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[] | [ .action,.botScore,.botScoreSrcName,.clientASNDescription,.clientAsn,.clientCountryName,.clientIP,.clientRefererHost,.clientRefererPath,.clientRefererQuery,.clientRefererScheme,.clientRequestHTTPHost,.clientRequestHTTPMethodName,.clientRequestHTTPProtocol,.clientRequestPath,.clientRequestQuery,.clientRequestScheme,.datetime,.edgeColoName,.edgeResponseStatus,.kind,.originResponseStatus,.rayName,.ruleId,.source,.userAgent ] | @csv' >> "$JSON_CSV_OUTPUT_FILE"
+  fi
 else
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 fi
@@ -644,6 +682,7 @@ fi
 
 ruleid_fw_analytics_days() {
   JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ruleid-days.json"
+  JSON_CSV_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ruleid-days.csv"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -768,6 +807,9 @@ fi
 
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   echo "JSON log saved: $JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    echo "CSV converted log saved: $JSON_CSV_OUTPUT_FILE"
+  fi
   echo
 fi
 
@@ -826,6 +868,13 @@ echo "------------------------------------------------------------------"
 # listing json
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    # csv conversion
+    # headers
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[0] | keys | @csv' | tr -d '"' > "$JSON_CSV_OUTPUT_FILE"
+    # data
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[] | [ .action,.botScore,.botScoreSrcName,.clientASNDescription,.clientAsn,.clientCountryName,.clientIP,.clientRefererHost,.clientRefererPath,.clientRefererQuery,.clientRefererScheme,.clientRequestHTTPHost,.clientRequestHTTPMethodName,.clientRequestHTTPProtocol,.clientRequestPath,.clientRequestQuery,.clientRequestScheme,.datetime,.edgeColoName,.edgeResponseStatus,.kind,.originResponseStatus,.rayName,.ruleId,.source,.userAgent ] | @csv' >> "$JSON_CSV_OUTPUT_FILE"
+  fi
 else
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 fi
@@ -834,6 +883,7 @@ fi
 
 ruleid_fw_analytics() {
   JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ruleid.json"
+  JSON_CSV_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ruleid.csv"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -958,6 +1008,9 @@ fi
 
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   echo "JSON log saved: $JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    echo "CSV converted log saved: $JSON_CSV_OUTPUT_FILE"
+  fi
   echo
 fi
 
@@ -1016,6 +1069,13 @@ echo "------------------------------------------------------------------"
 # listing json
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    # csv conversion
+    # headers
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[0] | keys | @csv' | tr -d '"' > "$JSON_CSV_OUTPUT_FILE"
+    # data
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[] | [ .action,.botScore,.botScoreSrcName,.clientASNDescription,.clientAsn,.clientCountryName,.clientIP,.clientRefererHost,.clientRefererPath,.clientRefererQuery,.clientRefererScheme,.clientRequestHTTPHost,.clientRequestHTTPMethodName,.clientRequestHTTPProtocol,.clientRequestPath,.clientRequestQuery,.clientRequestScheme,.datetime,.edgeColoName,.edgeResponseStatus,.kind,.originResponseStatus,.rayName,.ruleId,.source,.userAgent ] | @csv' >> "$JSON_CSV_OUTPUT_FILE"
+  fi
 else
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 fi
@@ -1024,6 +1084,7 @@ fi
 
 ruleid_fw_analytics_hrs() {
   JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ruleid-hrs.json"
+  JSON_CSV_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-ruleid-hrs.csv"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -1146,6 +1207,9 @@ fi
 
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   echo "JSON log saved: $JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    echo "CSV converted log saved: $JSON_CSV_OUTPUT_FILE"
+  fi
   echo
 fi
 
@@ -1204,6 +1268,13 @@ echo "------------------------------------------------------------------"
 # listing json
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    # csv conversion
+    # headers
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[0] | keys | @csv' | tr -d '"' > "$JSON_CSV_OUTPUT_FILE"
+    # data
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[] | [ .action,.botScore,.botScoreSrcName,.clientASNDescription,.clientAsn,.clientCountryName,.clientIP,.clientRefererHost,.clientRefererPath,.clientRefererQuery,.clientRefererScheme,.clientRequestHTTPHost,.clientRequestHTTPMethodName,.clientRequestHTTPProtocol,.clientRequestPath,.clientRequestQuery,.clientRequestScheme,.datetime,.edgeColoName,.edgeResponseStatus,.kind,.originResponseStatus,.rayName,.ruleId,.source,.userAgent ] | @csv' >> "$JSON_CSV_OUTPUT_FILE"
+  fi
 else
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 fi
@@ -1212,6 +1283,7 @@ fi
 
 fw_analytics_days() {
   JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-firewall-day.json"
+  JSON_CSV_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-firewall-day.csv"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -1336,6 +1408,9 @@ fi
 
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   echo "JSON log saved: $JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    echo "CSV converted log saved: $JSON_CSV_OUTPUT_FILE"
+  fi
   echo
 fi
 
@@ -1394,6 +1469,13 @@ echo "------------------------------------------------------------------"
 # listing json
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    # csv conversion
+    # headers
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[0] | keys | @csv' | tr -d '"' > "$JSON_CSV_OUTPUT_FILE"
+    # data
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[] | [ .action,.botScore,.botScoreSrcName,.clientASNDescription,.clientAsn,.clientCountryName,.clientIP,.clientRefererHost,.clientRefererPath,.clientRefererQuery,.clientRefererScheme,.clientRequestHTTPHost,.clientRequestHTTPMethodName,.clientRequestHTTPProtocol,.clientRequestPath,.clientRequestQuery,.clientRequestScheme,.datetime,.edgeColoName,.edgeResponseStatus,.kind,.originResponseStatus,.rayName,.ruleId,.source,.userAgent ] | @csv' >> "$JSON_CSV_OUTPUT_FILE"
+  fi
 else
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 fi
@@ -1402,6 +1484,7 @@ fi
 
 fw_analytics() {
   JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-firewall.json"
+  JSON_CSV_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-firewall.csv"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -1526,6 +1609,9 @@ fi
 
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   echo "JSON log saved: $JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    echo "CSV converted log saved: $JSON_CSV_OUTPUT_FILE"
+  fi
   echo
 fi
 
@@ -1584,6 +1670,13 @@ echo "------------------------------------------------------------------"
 # listing json
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    # csv conversion
+    # headers
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[0] | keys | @csv' | tr -d '"' > "$JSON_CSV_OUTPUT_FILE"
+    # data
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[] | [ .action,.botScore,.botScoreSrcName,.clientASNDescription,.clientAsn,.clientCountryName,.clientIP,.clientRefererHost,.clientRefererPath,.clientRefererQuery,.clientRefererScheme,.clientRequestHTTPHost,.clientRequestHTTPMethodName,.clientRequestHTTPProtocol,.clientRequestPath,.clientRequestQuery,.clientRequestScheme,.datetime,.edgeColoName,.edgeResponseStatus,.kind,.originResponseStatus,.rayName,.ruleId,.source,.userAgent ] | @csv' >> "$JSON_CSV_OUTPUT_FILE"
+  fi
 else
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 fi
@@ -1592,6 +1685,7 @@ fi
 
 fw_analytics_hrs() {
   JSON_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-firewall-hrs.json"
+  JSON_CSV_OUTPUT_FILE="${JSON_OUTPUT_DIR}/cf-graphql-firewall-hrs.csv"
   req_referrer=${6:-none}
   req_referrer_check_multi=$(echo "$req_referrer" | grep -q ','; echo $?)
   req_hostname=$5
@@ -1767,6 +1861,13 @@ echo "------------------------------------------------------------------"
 # listing json
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]' | tee "$JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    # csv conversion
+    # headers
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[0] | keys | @csv' | tr -d '"' > "$JSON_CSV_OUTPUT_FILE"
+    # data
+    cat "$JSON_OUTPUT_FILE" | jq -r '.results[] | [ .action,.botScore,.botScoreSrcName,.clientASNDescription,.clientAsn,.clientCountryName,.clientIP,.clientRefererHost,.clientRefererPath,.clientRefererQuery,.clientRefererScheme,.clientRequestHTTPHost,.clientRequestHTTPMethodName,.clientRequestHTTPProtocol,.clientRequestPath,.clientRequestQuery,.clientRequestScheme,.datetime,.edgeColoName,.edgeResponseStatus,.kind,.originResponseStatus,.rayName,.ruleId,.source,.userAgent ] | @csv' >> "$JSON_CSV_OUTPUT_FILE"
+  fi
 else
   cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn][] | .dimensions' | jq -n '.results |= [inputs]'
 fi
@@ -1868,6 +1969,9 @@ fi
 
 if [[ "$JSON_OUTPUT_SAVE" = [yY] ]]; then
   echo "JSON log saved: $JSON_OUTPUT_FILE"
+  if [[ "$JSON_TO_CSV" = [yY] ]]; then
+    echo "CSV converted log saved: $JSON_CSV_OUTPUT_FILE"
+  fi
   echo
 fi
 
