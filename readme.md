@@ -6,7 +6,7 @@ If you have Cloudflare Argo enabled on your CF zone, also set `CF_ARGO='y'` - cu
 
 ## Required Cloudflare API Token Permissions
 
-By default the `cf-analytics-graphql.sh` script sets `CF_GLOBAL_TOKEN='n'` to use Cloudflare API Token. If you intend to use Cloudflare API Token, you'll need the account or zone level permissions for `Logs:Read` and `Analytics:Read` generated at [https://dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens).
+By default the `cf-analytics-graphql.sh` script sets `CF_GLOBAL_TOKEN='n'` to use Cloudflare API Token. If you intend to use Cloudflare API Token, you'll need the **Account** and **Zone** level permissions for `Logs:Read` and **Zone** level permissions for `Analytics:Read` generated at [https://dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens).
 
 ## Usage
 
