@@ -85,6 +85,13 @@ ip_analytics_hrs() {
   input_ip=$2
   input_ip_check_multi=$(echo "$input_ip" | grep -q ','; echo $?)
   input_actionfilter=${3:-none}
+
+  # CF plan limitations for how far back you can access
+  # analytics data
+  if [[ "$cfplan" = 'free' && "$since" -lt '30' ]]; then
+    since=30
+  fi
+
   back_seconds=$((60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
@@ -236,7 +243,7 @@ if [ -f "$CF_LOGFW" ]; then
   json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
 fi
 echo "------------------------------------------------------------------"
-echo "Cloudflare Firewall"
+echo "Cloudflare Firewall ($cfplan)"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
@@ -286,6 +293,15 @@ ip_analytics_days() {
   input_ip=$2
   input_ip_check_multi=$(echo "$input_ip" | grep -q ','; echo $?)
   input_actionfilter=${3:-none}
+
+  # CF plan limitations for how far back you can access
+  # analytics data
+  if [[ "$cfplan" = 'free' && "$since" -gt '1' ]]; then
+    since=1
+  elif [[ "$cfplan" = 'business' || "$cfplan" = 'enterprise' ]] && [[ "$since" -gt '3' ]]; then
+    since=3
+  fi
+
   back_seconds=$((86400 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
@@ -439,7 +455,7 @@ if [ -f "$CF_LOGFW" ]; then
   json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
 fi
 echo "------------------------------------------------------------------"
-echo "Cloudflare Firewall"
+echo "Cloudflare Firewall ($cfplan)"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
@@ -489,6 +505,15 @@ ip_analytics() {
   input_ip=$2
   input_ip_check_multi=$(echo "$input_ip" | grep -q ','; echo $?)
   input_actionfilter=${3:-none}
+
+  # CF plan limitations for how far back you can access
+  # analytics data
+  if [[ "$cfplan" = 'free' && "$since" -gt '24' ]]; then
+    since=24
+  elif [[ "$cfplan" = 'business' || "$cfplan" = 'enterprise' ]] && [[ "$since" -gt '72' ]]; then
+    since=72
+  fi
+
   back_seconds=$((60 * 60 * $since))
   end_epoch=$(TZ=UTC date +'%s')
   start_epoch=$((end_epoch-$back_seconds))
@@ -642,7 +667,7 @@ if [ -f "$CF_LOGFW" ]; then
   json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
 fi
 echo "------------------------------------------------------------------"
-echo "Cloudflare Firewall"
+echo "Cloudflare Firewall ($cfplan)"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
@@ -843,7 +868,7 @@ if [ -f "$CF_LOGFW" ]; then
   json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
 fi
 echo "------------------------------------------------------------------"
-echo "Cloudflare Firewall"
+echo "Cloudflare Firewall ($cfplan)"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
@@ -1044,7 +1069,7 @@ if [ -f "$CF_LOGFW" ]; then
   json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
 fi
 echo "------------------------------------------------------------------"
-echo "Cloudflare Firewall"
+echo "Cloudflare Firewall ($cfplan)"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
@@ -1243,7 +1268,7 @@ if [ -f "$CF_LOGFW" ]; then
   json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
 fi
 echo "------------------------------------------------------------------"
-echo "Cloudflare Firewall"
+echo "Cloudflare Firewall ($cfplan)"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
@@ -1444,7 +1469,7 @@ if [ -f "$CF_LOGFW" ]; then
   json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
 fi
 echo "------------------------------------------------------------------"
-echo "Cloudflare Firewall"
+echo "Cloudflare Firewall ($cfplan)"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
@@ -1645,7 +1670,7 @@ if [ -f "$CF_LOGFW" ]; then
   json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
 fi
 echo "------------------------------------------------------------------"
-echo "Cloudflare Firewall"
+echo "Cloudflare Firewall ($cfplan)"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
@@ -1836,7 +1861,7 @@ if [ -f "$CF_LOGFW" ]; then
   json_object_count=$(cat "$CF_LOGFW" | jq --arg dn "$DATANODE" -r '.data.viewer.zones[] | .[$dn] | length')
 fi
 echo "------------------------------------------------------------------"
-echo "Cloudflare Firewall"
+echo "Cloudflare Firewall ($cfplan)"
 echo "------------------------------------------------------------------"
 echo "since: $start_date"
 echo "until: $end_date"
